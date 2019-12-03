@@ -152,7 +152,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="LoadShaders.cpp" />
-    <ClCompile Include="Mesh.cpp" />
+    <ClCompile Include="Terrain.cpp" />
     <ClCompile Include="TerrainGeneration.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -162,7 +162,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="LoadShaders.h" />
-    <ClInclude Include="Mesh.h" />
+    <ClInclude Include="Terrain.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

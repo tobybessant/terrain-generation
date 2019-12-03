@@ -6,49 +6,20 @@
 #include "GL/freeglut.h"
 #include "GLFW/glfw3.h"
 
-#include "Mesh.h"
+#include "Terrain.h"
 #include "LoadShaders.h"
 
 using namespace std;
 
-#define SCREEN_X 800
-#define SCREEN_Y 600
+#define SCREEN_X 1920
+#define SCREEN_Y 1080
 
-#define MAX_ROWS 5
-#define MAX_COLS 5
+#define TILE_SIZE 0.1
+
+#define ROWS 40
+#define COLS 40
 
 int main() {
-	
-	vector<vector<GLfloat>> vertices;
-	vector<GLuint> indices;
-
-	// gen vertices
-	for (int row = 0; row < MAX_ROWS; row++) {
-		for (int col = 0; col < MAX_COLS; col++) {
-			vector<GLfloat> position;
-			position.push_back((GLfloat)col);
-			position.push_back(1.0f);
-			position.push_back((GLfloat) row);
-
-			vertices.push_back(position);
-		}
-	}
-
-	// gen indices
-	for (int row = 0; row < MAX_ROWS; row++) {
-		for (int col = 0; col < MAX_COLS; col++)
-		{
-			// tri 1
-			indices.push_back(col);
-			indices.push_back(col + 1);
-			indices.push_back(col + MAX_COLS);
-
-			// tri 2
-			indices.push_back(col + MAX_COLS);
-			indices.push_back(col + 1);
-			indices.push_back(col + MAX_COLS);
-		}
-	}
 
 	glfwInit();
 
@@ -64,16 +35,19 @@ int main() {
 	};
 
 	GLuint program = LoadShaders(shaders);
-	glClearColor(0.9f, 0.9f, 0.9f, 1.0f);
-
-	Mesh terrain = Mesh(vertices, indices, &program);
+	glClearColor(1.0f, 0.0f, 0.0f, 0.0f);
 
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	glFrontFace(GL_CW);
+	glCullFace(GL_BACK);
+	glEnable(GL_CULL_FACE);
+
+	Terrain t = Terrain(COLS, ROWS, TILE_SIZE);
 
 	while (true) {
 		glClear(GL_COLOR_BUFFER_BIT);
 
-		terrain.render();
+		t.render(program);
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
