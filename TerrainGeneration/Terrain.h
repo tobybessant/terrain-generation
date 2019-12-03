@@ -15,17 +15,12 @@ public:
 	Terrain(GLuint width, GLuint height, GLfloat tileSize);
 	void render(GLuint& program);
 private:
-	GLuint width;
-	GLuint height;
-	GLfloat tileSize;
+	GLuint  VAO;
+	GLuint  VBO, EBO;
 
 	std::vector<GLfloat> vertices;
 	std::vector<GLuint> indices;
 
-	GLuint VAO, VBO, EBO;
-
-	void generateTerrainData();
-	void loadTerrainData();
-	void centerTerrain();
+	glm::mat4 mvp;
 };
 

@@ -35,7 +35,8 @@ int main() {
 	};
 
 	GLuint program = LoadShaders(shaders);
-	glClearColor(1.0f, 0.0f, 0.0f, 0.0f);
+	glUseProgram(program);
+	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	glFrontFace(GL_CW);
