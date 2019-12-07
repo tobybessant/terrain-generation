@@ -61,10 +61,9 @@ Terrain::Terrain(GLuint width, GLuint height, GLfloat tileSize)
 	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * 6, (void*) (sizeof(GLfloat) * 3));
 
 	// center terrain
-	model = glm::translate(model, glm::vec3(-((width - 1) * tileSize) / 2, -0.5f, -1.0f));
-	model = glm::rotate(model, -3.0f, glm::vec3(1.0f, 0.0f, 0.0f));
+	model = glm::translate(model, glm::vec3(-((width / 2 ) * tileSize), -1.0f, -((height / 2) * tileSize)));
 
-	view = glm::translate(view, glm::vec3(0.0f, 0.0f, 0.0f));
+	view = glm::translate(view, glm::vec3(0.0f, 0.0f, -2.0f));
 
 	// Adding all matrices up to create combined matrix
 	mvp = projection * view * model;
@@ -75,12 +74,11 @@ Terrain::Terrain(GLuint width, GLuint height, GLfloat tileSize)
 
 void Terrain::render(GLuint& program)
 {
-	model = glm::rotate(model, 0.0001f, glm::vec3(0.0f, 1.0f, 0.0f));
-	mvp = projection * view * model;
+	//model = glm::rotate(model, 0.0001f, glm::vec3(0.0f, 1.0f, 0.0f));
+	//mvp = projection * view * model;
 
-	//adding the Uniform to the shader
-	int mvpLoc = glGetUniformLocation(program, "mvp");
-	glUniformMatrix4fv(mvpLoc, 1, GL_FALSE, glm::value_ptr(mvp));
+	////adding the Uniform to the shader
+	glUniformMatrix4fv(0, 1, GL_FALSE, glm::value_ptr(mvp));
 
 	glEnable(GL_PRIMITIVE_RESTART);
 	glPrimitiveRestartIndex(0xFFFF);

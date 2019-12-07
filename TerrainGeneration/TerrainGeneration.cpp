@@ -38,9 +38,7 @@ int main() {
 	glUseProgram(program);
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
-	//
-
-	glFrontFace(GL_CW);
+	glFrontFace(GL_CCW);
 	glCullFace(GL_BACK);
 	glEnable(GL_CULL_FACE);
 
@@ -54,15 +52,13 @@ int main() {
 	while (true) {
 		glClear(GL_COLOR_BUFFER_BIT);
 		glClear(GL_DEPTH_BUFFER_BIT);
-
-		int wireframeLoc = glGetUniformLocation(program, "wireframe");
 		
-		glUniform1i(wireframeLoc, 1);
+		glUniform1i(1, 1);
 		glPolygonMode(GL_FRONT, GL_FILL);
 		t.render(program);
 		
 
-		glUniform1i(wireframeLoc, 0);
+		glUniform1i(1, 0);
 		glPolygonMode(GL_FRONT, GL_LINE);
 		t.render(program);
 
