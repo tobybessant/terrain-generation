@@ -21,6 +21,10 @@ private:
 	std::vector<GLfloat> vertices;
 	std::vector<GLuint> indices;
 
+	GLfloat fillR = 0.1f;
+	GLfloat fillG = 0.1f;
+	GLfloat fillB = 0.1f;
+
 	glm::mat4 model = glm::mat4(1.0f);
 	glm::mat4 view = glm::mat4(1.0f);
 	glm::mat4 projection = glm::perspective(45.0f, 16.0f / 9, 0.1f, 20.0f);

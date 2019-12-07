@@ -16,8 +16,8 @@ using namespace std;
 
 #define TILE_SIZE 0.2
 
-#define ROWS 10
-#define COLS 10
+#define ROWS 50
+#define COLS 50
 
 int main() {
 
@@ -53,15 +53,7 @@ int main() {
 		glClear(GL_COLOR_BUFFER_BIT);
 		glClear(GL_DEPTH_BUFFER_BIT);
 		
-		glUniform1i(1, 1);
-		glPolygonMode(GL_FRONT, GL_FILL);
 		t.render(program);
-		
-
-		glUniform1i(1, 0);
-		glPolygonMode(GL_FRONT, GL_LINE);
-		t.render(program);
-
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
