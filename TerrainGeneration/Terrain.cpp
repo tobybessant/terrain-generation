@@ -2,7 +2,8 @@
 
 Terrain::Terrain(GLuint width, GLuint height, GLfloat tileSize)
 {
-	std::vector<GLfloat> yPositions = { 0.0f, 0.1f, 0.2f, 0.3f };
+	std::vector<GLfloat> yPositions = { 0.0f, 0.01f, 0.3f };
+	// 0.1f, 0.2f, 0.3f
 	std::vector<std::vector<GLfloat>> colours = {
 		{ 0.0f, 0.0f, 1.0f, 1.0f }
 	};
@@ -32,18 +33,15 @@ Terrain::Terrain(GLuint width, GLuint height, GLfloat tileSize)
 	}
 
 	GLuint indexCounter = 0;
-	for (size_t index = 0; indices.size() < ((height * width) - width) * 2; index += 2)
+	for (size_t index = 0; (index + width) < (height * width); index += 1)
 	{
 		indices.push_back(index);
-		indices.push_back(index + width); 
-		indices.push_back(index + 1);
-		indices.push_back(index + 1 + width);
+		indices.push_back(index + width);
 
-		indexCounter += 4;
-		if (indexCounter == width * 2) {
-			// indices.push_back(index + 1 + width);
-			// indices.push_back(index + 2 + width);
-			indices.push_back(0xFFFF);
+		indexCounter += 1;
+		if (indexCounter == width && (index + width) != (height * width) - 1) {
+			indices.push_back(index + width);
+			indices.push_back(index + 1);
 			indexCounter = 0;
 		}
 	}
@@ -74,33 +72,27 @@ Terrain::Terrain(GLuint width, GLuint height, GLfloat tileSize)
 
 	// Adding all matrices up to create combined matrix
 	mvp = projection * view * model;
-	glUniformMatrix4fv(0, 1, GL_FALSE, glm::value_ptr(mvp));
-
+	
 	glEnableVertexAttribArray(0);
 	glEnableVertexAttribArray(1);
 }
 
 void Terrain::render(GLuint& program)
 {
-	//model = glm::rotate(model, 0.00001f, glm::vec3(0.0f, 1.0f, 0.0f));
-	//mvp = projection * view * model;
-
-	//adding the Uniform to the shader
-	
-
-	glEnable(GL_PRIMITIVE_RESTART);
-	glPrimitiveRestartIndex(0xFFFF);
+	model = glm::rotate(model, 0.0001f, glm::vec3(0.0f, 1.0f, 0.0f));
+	mvp = projection * view * model;	
+	glUniformMatrix4fv(0, 1, GL_FALSE, glm::value_ptr(mvp));
 
 	glBindVertexArray(VAO);
 
 	// draw fill colour
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * 9, (void*)(sizeof(GLfloat) * 3));
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * 9, (void*)(sizeof(GLfloat) * 6));
 	glDrawElements(GL_TRIANGLE_STRIP, indices.size(), GL_UNSIGNED_INT, 0);
 
 	// draw polygon colour
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * 9, (void*)(sizeof(GLfloat) * 6));
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * 9, (void*)(sizeof(GLfloat) * 3));
 	glDrawElements(GL_TRIANGLE_STRIP, indices.size(), GL_UNSIGNED_INT, 0);
 }

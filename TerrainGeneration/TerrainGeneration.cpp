@@ -16,8 +16,8 @@ using namespace std;
 
 #define TILE_SIZE 0.2
 
-#define ROWS 50
-#define COLS 50
+#define ROWS 70
+#define COLS 70
 
 int main() {
 
@@ -44,8 +44,8 @@ int main() {
 
 	glEnable(GL_DEPTH_TEST);
 
-	glEnable(GL_POLYGON_OFFSET_LINE);
-	glPolygonOffset(-1.0, -1.0);
+	glEnable(GL_POLYGON_OFFSET_FILL);
+	glPolygonOffset(2.0, 2.0);
 
 	Terrain t = Terrain(COLS, ROWS, TILE_SIZE);
 
