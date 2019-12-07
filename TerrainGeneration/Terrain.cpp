@@ -2,9 +2,6 @@
 
 Terrain::Terrain(GLuint width, GLuint height, GLfloat tileSize)
 {
-	glGenVertexArrays(1, &VAO);
-	glBindVertexArray(VAO);
-
 	for (size_t row = 0; row < width; row++)
 	{
 		GLfloat rowOffset = row * tileSize;
@@ -23,6 +20,9 @@ Terrain::Terrain(GLuint width, GLuint height, GLfloat tileSize)
 		indices.push_back(index + 1 + width);
 	}
 
+	glGenVertexArrays(1, &VAO);
+	glBindVertexArray(VAO);
+
 	glGenBuffers(1, &VBO);
 	glGenBuffers(1, &EBO);
 
@@ -34,19 +34,12 @@ Terrain::Terrain(GLuint width, GLuint height, GLfloat tileSize)
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * indices.size(), &indices[0], GL_STATIC_DRAW);
 
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
-
-	// creating the model matrix
-	glm::mat4 model = glm::mat4(1.0f);
+	
 	// center terrain
 	model = glm::translate(model, glm::vec3(-((width - 1) * tileSize) / 2, -0.5f, -1.0f));
 	model = glm::rotate(model, -3.0f, glm::vec3(1.0f, 0.0f, 0.0f));
 
-	// creating the view matrix
-	glm::mat4 view = glm::mat4(1.0f);
 	view = glm::translate(view, glm::vec3(0.0f, 0.0f, 0.0f));
-
-	// creating the projection matrix
-	glm::mat4 projection = glm::perspective(45.0f, 16.0f / 9, 0.1f, 20.0f);
 
 	// Adding all matrices up to create combined matrix
 	mvp = projection * view * model;
@@ -57,10 +50,8 @@ Terrain::Terrain(GLuint width, GLuint height, GLfloat tileSize)
 
 void Terrain::render(GLuint& program)
 {
-	// bind textures on corresponding texture units
-	glFrontFace(GL_CW);
-	glCullFace(GL_BACK);
-	glEnable(GL_CULL_FACE);
+	model = glm::rotate(model, 0.0001f, glm::vec3(0.0f, 1.0f, 0.0f));
+	mvp = projection * view * model;
 
 	//adding the Uniform to the shader
 	int mvpLoc = glGetUniformLocation(program, "mvp");
