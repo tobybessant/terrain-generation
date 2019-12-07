@@ -3,7 +3,13 @@
 out vec4 fColour;
 in vec4 fragColour;
 
+uniform bool wireframe;
+
 void main()
 {
-    fColour = vec4(0.5, 0.4, 0.8, 1.0);
+	if(wireframe) {
+		fColour = vec4(0.0, 0.0, 0.0, 1.0);
+	} else {
+		fColour = fragColour;
+	}
 }

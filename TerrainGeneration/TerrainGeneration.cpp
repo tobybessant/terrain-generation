@@ -14,10 +14,10 @@ using namespace std;
 #define SCREEN_X 1920
 #define SCREEN_Y 1080
 
-#define TILE_SIZE 0.1
+#define TILE_SIZE 0.2
 
-#define ROWS 40
-#define COLS 40
+#define ROWS 10
+#define COLS 10
 
 int main() {
 
@@ -38,17 +38,34 @@ int main() {
 	glUseProgram(program);
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
-	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	//
+
 	glFrontFace(GL_CW);
 	glCullFace(GL_BACK);
 	glEnable(GL_CULL_FACE);
+
+	glEnable(GL_DEPTH_TEST);
+
+	glEnable(GL_POLYGON_OFFSET_LINE);
+	glPolygonOffset(-1.0, -1.0);
 
 	Terrain t = Terrain(COLS, ROWS, TILE_SIZE);
 
 	while (true) {
 		glClear(GL_COLOR_BUFFER_BIT);
+		glClear(GL_DEPTH_BUFFER_BIT);
 
+		int wireframeLoc = glGetUniformLocation(program, "wireframe");
+		
+		glUniform1i(wireframeLoc, 1);
+		glPolygonMode(GL_FRONT, GL_FILL);
 		t.render(program);
+		
+
+		glUniform1i(wireframeLoc, 0);
+		glPolygonMode(GL_FRONT, GL_LINE);
+		t.render(program);
+
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();

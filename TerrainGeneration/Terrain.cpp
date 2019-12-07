@@ -2,22 +2,45 @@
 
 Terrain::Terrain(GLuint width, GLuint height, GLfloat tileSize)
 {
+	std::vector<GLfloat> normals = { 0.0f, 0.1f };
+	std::vector<std::vector<GLfloat>> colours = {
+		{ 1.0f, 1.0f, 1.0f, 1.0f }, { 0.5f, 0.2f, 1.0f, 1.0f }
+	};
+
 	for (size_t row = 0; row < width; row++)
 	{
 		GLfloat rowOffset = row * tileSize;
 		for (size_t col = 0; col < height; col++) {
+
+			// position
 			vertices.push_back((GLfloat)col * tileSize);
-			vertices.push_back(0.0f);
+			vertices.push_back(normals[col % 2]);
 			vertices.push_back((GLfloat)rowOffset);
+
+			// colour
+			std::vector<GLfloat> colour = colours[col % colours.size()];
+			// std::vector<GLfloat> colour = colours[1];
+			vertices.push_back(colour[0]);
+			vertices.push_back(colour[1]);
+			vertices.push_back(colour[2]);
 		}
 	}
 
+	GLuint indexCounter = 0;
 	for (size_t index = 0; indices.size() < ((height * width) - width) * 2; index += 2)
 	{
 		indices.push_back(index);
-		indices.push_back(index + width);
+		indices.push_back(index + width); 
 		indices.push_back(index + 1);
 		indices.push_back(index + 1 + width);
+
+		indexCounter += 4;
+		if (indexCounter == width * 2) {
+			// indices.push_back(index + 1 + width);
+			// indices.push_back(index + 2 + width);
+			indices.push_back(0xFFFF);
+			indexCounter = 0;
+		}
 	}
 
 	glGenVertexArrays(1, &VAO);
@@ -33,8 +56,10 @@ Terrain::Terrain(GLuint width, GLuint height, GLfloat tileSize)
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * indices.size(), &indices[0], GL_STATIC_DRAW);
 
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
-	
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * 6, (void*)0);
+
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * 6, (void*) (sizeof(GLfloat) * 3));
+
 	// center terrain
 	model = glm::translate(model, glm::vec3(-((width - 1) * tileSize) / 2, -0.5f, -1.0f));
 	model = glm::rotate(model, -3.0f, glm::vec3(1.0f, 0.0f, 0.0f));
@@ -44,8 +69,8 @@ Terrain::Terrain(GLuint width, GLuint height, GLfloat tileSize)
 	// Adding all matrices up to create combined matrix
 	mvp = projection * view * model;
 
-
 	glEnableVertexAttribArray(0);
+	glEnableVertexAttribArray(1);
 }
 
 void Terrain::render(GLuint& program)
@@ -56,6 +81,9 @@ void Terrain::render(GLuint& program)
 	//adding the Uniform to the shader
 	int mvpLoc = glGetUniformLocation(program, "mvp");
 	glUniformMatrix4fv(mvpLoc, 1, GL_FALSE, glm::value_ptr(mvp));
+
+	glEnable(GL_PRIMITIVE_RESTART);
+	glPrimitiveRestartIndex(0xFFFF);
 
 	glBindVertexArray(VAO);
 	glDrawElements(GL_TRIANGLE_STRIP, indices.size(), GL_UNSIGNED_INT, 0);
