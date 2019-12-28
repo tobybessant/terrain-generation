@@ -30,6 +30,13 @@ void printLine(const vector<string>& segments) {
 	cout << endl;
 }
 
+void clearConsole() {
+	for (size_t i = 0; i < 30; i++)
+	{
+		cout << endl;
+	}
+}
+
 GLuint programSetup() {
 	ShaderInfo  shaders[] = {
 		{ GL_VERTEX_SHADER, "shaders/triangles.vert" },
@@ -54,15 +61,21 @@ GLuint programSetup() {
 }
 
 Terrain* askForTerrainConfig() {
+	clearConsole();
+
 	// ask for terrain size
 	GLuint terrainSize;
 	printLine({ "Please enter the size of the terrain (single integer value that will be both H and W)" });
+	printLine({ "DEFAULT: 1000 | RECCOMMENDED: 500 - 1500" });
 	cin >> terrainSize;
+	clearConsole();
 
 	// as for tile size
 	GLfloat tileSize;
 	printLine({ "Please enter the tile size (single float value between 0 and 1)" });
+	printLine({ "DEFAULT: 0.02 | RECCOMMENDED: 0.01 - 0.3" });
 	cin >> tileSize;
+	clearConsole();
 
 	// ask for nosie type
 	GLuint selectedNoiseTypeIndex;
@@ -70,16 +83,20 @@ Terrain* askForTerrainConfig() {
 	vector<string> noiseTypes { "Value", "Value Fractal", "Perlin", "Perlin Fractal", "Simplex", "Simplex Fractal", "Cellular", "White Noise", "Cubic", "Cubic Fractal" };
 
 	printLine({ "Please select the type of noise to generate the terrain height map" });
+	printLine({ "DEFAULT: 0 (Value) " });
 	for (int i = 0; i < noiseTypes.size(); i++)
 	{
 		printLine({ "[", to_string(i), "] = ", noiseTypes[i] });
 	}
 	cin >> selectedNoiseTypeIndex;
 	noiseType = static_cast<FastNoise::NoiseType>(selectedNoiseTypeIndex);
+	clearConsole();
 
 	GLfloat noiseFrequency;
 	printLine({ "Please enter the noise frequency" });
+	printLine({ "DEFAULT: 0.02 | RECCOMMENDED: 0.01 - 0.1" });
 	cin >> noiseFrequency;
+	clearConsole();
 
 	return new Terrain(terrainSize, terrainSize, tileSize, noiseType, noiseFrequency);
 }
