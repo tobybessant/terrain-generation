@@ -13,7 +13,7 @@
 class Terrain
 {
 public:
-	Terrain(GLuint width, GLuint height, GLfloat tileSize);
+	Terrain(GLuint width, GLuint height, GLfloat tileSize, FastNoise::NoiseType noiseType, GLfloat noiseFrequency);
 	void render(GLuint& program);
 private:
 	GLuint  VAO;

@@ -1,8 +1,8 @@
 #include "Terrain.h"
 
-Terrain::Terrain(GLuint width, GLuint height, GLfloat tileSize)
+Terrain::Terrain(GLuint width, GLuint height, GLfloat tileSize, FastNoise::NoiseType noiseType, GLfloat noiseFrequency)
 {
-	noise.SetNoiseType(FastNoise::Cellular);
+	noise.SetNoiseType(noiseType);
 	noise.SetFrequency(0.05f);
 
 	std::vector<std::vector<GLfloat>> colours = {
