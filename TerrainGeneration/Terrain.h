@@ -1,4 +1,5 @@
 #pragma once
+#include "Dependencies/FastNoise/FastNoise.h"
 #include <GL\glew.h>
 #include <GLFW\glfw3.h>
 #include <glm/glm.hpp>
@@ -24,6 +25,8 @@ private:
 	GLfloat fillR = 0.0f;
 	GLfloat fillG = 0.0f;
 	GLfloat fillB = 0.0f;
+
+	FastNoise noise;
 
 	glm::mat4 model = glm::mat4(1.0f);
 	glm::mat4 view = glm::mat4(1.0f);

@@ -2,8 +2,9 @@
 
 Terrain::Terrain(GLuint width, GLuint height, GLfloat tileSize)
 {
-	std::vector<GLfloat> yPositions = { 0.0f, 0.01f, 0.3f };
-	// 0.1f, 0.2f, 0.3f
+	noise.SetNoiseType(FastNoise::Cellular);
+	noise.SetFrequency(0.05f);
+
 	std::vector<std::vector<GLfloat>> colours = {
 		{ 0.0f, 0.0f, 1.0f, 1.0f }
 	};
@@ -14,18 +15,18 @@ Terrain::Terrain(GLuint width, GLuint height, GLfloat tileSize)
 		for (size_t col = 0; col < height; col++) {
 
 			// position
-			GLfloat y = yPositions[rand() % yPositions.size()];
+			GLfloat y = noise.GetNoise(col, row);
 			vertices.push_back((GLfloat) col * tileSize);
 			vertices.push_back(y);
 			vertices.push_back((GLfloat) rowOffset);
 
-			// polygon colour
+			// polygon lines colour
 			std::vector<GLfloat> colour = colours[col % colours.size()];
 			vertices.push_back(y * 2);
 			vertices.push_back(y);
 			vertices.push_back(colour[2]);
 
-			// fill colour
+			// polygon fill colour
 			vertices.push_back(fillR);
 			vertices.push_back(fillG);
 			vertices.push_back(fillB);

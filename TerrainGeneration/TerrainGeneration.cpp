@@ -16,11 +16,10 @@ using namespace std;
 
 #define TILE_SIZE 0.2
 
-#define ROWS 70
-#define COLS 70
+#define ROWS 1000
+#define COLS 1000
 
-int main() {
-
+void openGLSetup() {
 	glfwInit();
 
 	GLFWwindow* window = glfwCreateWindow(SCREEN_X, SCREEN_Y, "Terrain Generator", NULL, NULL);
@@ -46,6 +45,11 @@ int main() {
 
 	glEnable(GL_POLYGON_OFFSET_FILL);
 	glPolygonOffset(2.0, 2.0);
+}
+
+int main() {
+
+	openGLSetup();
 
 	Terrain t = Terrain(COLS, ROWS, TILE_SIZE);
 
@@ -58,5 +62,4 @@ int main() {
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 	}
-
 }
