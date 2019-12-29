@@ -152,10 +152,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Dependencies\FastNoise\FastNoise.cpp" />
+    <ClCompile Include="GLFWServices.cpp" />
+    <ClCompile Include="InputManager.cpp" />
     <ClCompile Include="LoadShaders.cpp" />
     <ClCompile Include="Terrain.cpp" />
     <ClCompile Include="TerrainGeneration.cpp" />
+    <ClCompile Include="Time.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -163,8 +167,13 @@
     <None Include="Shaders\triangles.vert" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Camera.h" />
+    <ClInclude Include="GLFWServices.h" />
+    <ClInclude Include="InputManager.h" />
     <ClInclude Include="LoadShaders.h" />
+    <ClInclude Include="Observer.h" />
     <ClInclude Include="Terrain.h" />
+    <ClInclude Include="Time.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

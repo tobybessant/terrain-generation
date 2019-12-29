@@ -18,9 +18,9 @@ public:
 	Terrain(GLuint _size, GLfloat _tileSize);
 	Terrain(GLuint _size, GLfloat _tileSize, FastNoise::NoiseType _noiseType);
 	Terrain(GLuint _size, GLfloat _tileSize, FastNoise::NoiseType _noiseType, GLfloat _noiseFrequency);
-	Terrain(GLuint _width, GLuint _height, GLfloat _tileSize, FastNoise::NoiseType _noiseType, GLfloat _noiseFrequency);
 
 	void render(GLuint& program);
+	glm::mat4 getModel();
 private:
 	GLuint  VAO;
 	GLuint  VBO, EBO;
@@ -41,17 +41,11 @@ private:
 	FastNoise::NoiseType noiseType = FastNoise::Perlin;
 
 	glm::mat4 model = glm::mat4(1.0f);
-	glm::mat4 view = glm::mat4(1.0f);
-	glm::mat4 projection = glm::perspective(45.0f, 16.0f / 9, 0.1f, 20.0f);
-
-	glm::mat4 mvp;
 
 	void createTerrain();
 
 	void generateVertices();
 	void generateIndices();
 	void loadIntoShader();
-
-	void printConfig();
 };
 

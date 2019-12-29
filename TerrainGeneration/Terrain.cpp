@@ -34,25 +34,12 @@ Terrain::Terrain(GLuint _size, GLfloat _tileSize, FastNoise::NoiseType _noiseTyp
 	tileSize = _tileSize;
 	noiseType = _noiseType;
 	noiseFrequency = _noiseFrequency;
-}
-
-Terrain::Terrain(GLuint _width, GLuint _height, GLfloat _tileSize, FastNoise::NoiseType _noiseType, GLfloat _noiseFrequency)
-{
-	width = _width;
-	height = _height;
-	tileSize = _tileSize;
-	noiseType = _noiseType;
-	noiseFrequency = _noiseFrequency;
 
 	createTerrain();
 }
 
 void Terrain::render(GLuint& program)
 {
-	model = glm::rotate(model, 0.0001f, glm::vec3(0.0f, 1.0f, 0.0f));
-	mvp = projection * view * model;	
-	glUniformMatrix4fv(0, 1, GL_FALSE, glm::value_ptr(mvp));
-
 	glBindVertexArray(VAO);
 
 	// draw fill colour
@@ -69,10 +56,14 @@ void Terrain::render(GLuint& program)
 
 void Terrain::createTerrain()
 {
-	printConfig();
 	generateVertices();
 	generateIndices();
 	loadIntoShader();
+}
+
+glm::mat4 Terrain::getModel()
+{
+	return model;
 }
 
 void Terrain::generateVertices()
@@ -146,21 +137,7 @@ void Terrain::loadIntoShader()
 	// center terrain
 	model = glm::translate(model, glm::vec3(-((width / 2) * tileSize), -1.0f, -((height / 2) * tileSize)));
 
-	view = glm::translate(view, glm::vec3(0.0f, 0.0f, -2.8f));
-
-	// Adding all matrices up to create combined matrix
-	mvp = projection * view * model;
-
 	glEnableVertexAttribArray(0);
 	glEnableVertexAttribArray(1);
 }
 
-void Terrain::printConfig()
-{
-	std::cout << " -= Terrain Config =- " << std::endl;
-	std::cout << "  Width: " << width << std::endl;
-	std::cout << "  Height: " << height << std::endl;
-	std::cout << "  tileSize: " << tileSize << std::endl;
-	std::cout << "  noiseType: " << noiseType << std::endl;
-	std::cout << "  noiseFrequency: " << noiseFrequency << std::endl;
-}
