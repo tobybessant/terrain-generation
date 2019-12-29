@@ -153,6 +153,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="ConsoleServices.cpp" />
     <ClCompile Include="Dependencies\FastNoise\FastNoise.cpp" />
     <ClCompile Include="GLFWServices.cpp" />
     <ClCompile Include="InputManager.cpp" />
@@ -168,6 +169,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="ConsoleServices.h" />
     <ClInclude Include="GLFWServices.h" />
     <ClInclude Include="InputManager.h" />
     <ClInclude Include="LoadShaders.h" />

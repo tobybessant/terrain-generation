@@ -11,7 +11,7 @@ GLFWServices::GLFWServices(InputManager* _inputManager)
 	registerKeypressCallbacks();
 }
 
-void GLFWServices::intialiseWindow(const GLuint width, const GLuint height, const char* name)
+void GLFWServices::intialiseWindow(const char* name)
 {
 	GLFWmonitor* primary = glfwGetPrimaryMonitor();
 	const GLFWvidmode* mode = glfwGetVideoMode(primary);

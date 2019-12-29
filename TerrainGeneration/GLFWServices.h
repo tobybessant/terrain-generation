@@ -9,7 +9,7 @@ class GLFWServices
 public:
 	GLFWServices(InputManager* _inputManager);
 
-	void intialiseWindow(const GLuint width, const GLuint height, const char* name);
+	void intialiseWindow(const char* name);
 	void hideWindow();
 	void showWindow();
 	bool windowShouldClose();
