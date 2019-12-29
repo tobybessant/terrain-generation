@@ -14,10 +14,8 @@
 class Terrain
 {
 public:
-	Terrain(GLuint _size);
-	Terrain(GLuint _size, GLfloat _tileSize);
-	Terrain(GLuint _size, GLfloat _tileSize, FastNoise::NoiseType _noiseType);
 	Terrain(GLuint _size, GLfloat _tileSize, FastNoise::NoiseType _noiseType, GLfloat _noiseFrequency);
+	Terrain(GLuint _size, GLfloat _tileSize, FastNoise::NoiseType _noiseType, GLfloat _noiseFrequency, GLuint seed);
 
 	void render(GLuint& program);
 	glm::mat4 getModel();
@@ -35,6 +33,7 @@ private:
 	GLuint width = 1000;
 	GLuint height = 1000;
 	GLfloat tileSize = 0.02;
+	GLuint seed;
 
 	FastNoise noise;
 	GLfloat noiseFrequency = 0.02;

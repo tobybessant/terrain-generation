@@ -1,32 +1,5 @@
 #include "Terrain.h"
 
-Terrain::Terrain(GLuint _size)
-{
-	width = _size;
-	height = _size;
-
-	createTerrain();
-}
-
-Terrain::Terrain(GLuint _size, GLfloat _tileSize)
-{
-	width = _size;
-	height = _size;
-	tileSize = _tileSize;
-
-	createTerrain();
-}
-
-Terrain::Terrain(GLuint _size, GLfloat _tileSize, FastNoise::NoiseType _noiseType)
-{
-	width = _size;
-	height = _size;
-	tileSize = _tileSize;
-	noiseType = _noiseType;
-
-	createTerrain();
-}
-
 Terrain::Terrain(GLuint _size, GLfloat _tileSize, FastNoise::NoiseType _noiseType, GLfloat _noiseFrequency)
 {
 	width = _size;
@@ -34,6 +7,19 @@ Terrain::Terrain(GLuint _size, GLfloat _tileSize, FastNoise::NoiseType _noiseTyp
 	tileSize = _tileSize;
 	noiseType = _noiseType;
 	noiseFrequency = _noiseFrequency;
+	seed = rand();
+
+	createTerrain();
+}
+
+Terrain::Terrain(GLuint _size, GLfloat _tileSize, FastNoise::NoiseType _noiseType, GLfloat _noiseFrequency, GLuint _seed)
+{
+	width = _size;
+	height = _size;
+	tileSize = _tileSize;
+	noiseType = _noiseType;
+	noiseFrequency = _noiseFrequency;
+	seed = _seed;
 
 	createTerrain();
 }
@@ -70,6 +56,7 @@ void Terrain::generateVertices()
 {
 	noise.SetNoiseType(noiseType);
 	noise.SetFrequency(noiseFrequency);
+	noise.SetSeed(seed);
 
 	std::vector<std::vector<GLfloat>> colours = {
 		{ 0.0f, 0.0f, 1.0f, 1.0f }

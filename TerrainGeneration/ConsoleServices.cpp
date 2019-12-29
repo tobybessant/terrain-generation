@@ -10,7 +10,6 @@ Terrain* ConsoleServices::askForTerrain()
 	askForUnsignedInt("-= Terrain Size =-",
 					  "Single integer value that will be the height & width of the terrain. RECOMMENDED: 500 - 1500",
 					  &terrainSize);
-	
 	clearConsole();
 	printTerrainConfig(terrainSize);
 
@@ -19,7 +18,6 @@ Terrain* ConsoleServices::askForTerrain()
 	askForFloat("-= Tile Size =-",
 				"Width and height of each tile. RECOMMENDED: 0.01 - 0.2",
 				&tileSize);
-
 	clearConsole();
 	printTerrainConfig(terrainSize, tileSize);
 
@@ -33,24 +31,42 @@ Terrain* ConsoleServices::askForTerrain()
 	{
 		noiseTypesDescription += to_string(i) + " = " + noiseTypes[i] + "\n";
 	}
-	noiseTypesDescription += "\n  Enter desired noise index: ";
 
+	noiseTypesDescription += "\n  Enter desired noise index: ";
 	askForUnsignedInt("-= Noise Type =-", noiseTypesDescription, &selectedNoiseTypeIndex, noiseTypes.size() - 1);
 	noiseType = static_cast<FastNoise::NoiseType>(selectedNoiseTypeIndex);
-
-
 	clearConsole();
 	printTerrainConfig(terrainSize, tileSize, noiseTypes[selectedNoiseTypeIndex]);
 
+	// ask for noise frequency
 	GLfloat noiseFrequency;
 	askForFloat("-= Noise Frequency =-",
 				"Frequency of the noise to be generated. RECOMMENDED: 0.01 - 0.1",
 				&noiseFrequency);
-
 	clearConsole();
 	printTerrainConfig(terrainSize, tileSize, noiseTypes[selectedNoiseTypeIndex], noiseFrequency);
 
-	return new Terrain(terrainSize, tileSize, noiseType, noiseFrequency);
+	// ask for noise seed
+	string seed;
+	string seedDisplay = "Random";
+	askForSeed("-= Noise Seed =-", 
+			   "Enter a terrain seed (any positive or negative whole integer, for random seed enter 'r')", 
+			   &seed);
+	clearConsole();
+	
+	Terrain* t = nullptr;
+	if (isNumber(seed)) {
+		seedDisplay = seed;
+		printTerrainConfig(terrainSize, tileSize, noiseTypes[selectedNoiseTypeIndex], noiseFrequency, seedDisplay);
+		
+		t = new Terrain(terrainSize, tileSize, noiseType, noiseFrequency, stoi(seed));
+	}
+	else {
+		printTerrainConfig(terrainSize, tileSize, noiseTypes[selectedNoiseTypeIndex], noiseFrequency, seedDisplay);
+		t = new Terrain(terrainSize, tileSize, noiseType, noiseFrequency);
+	}
+	
+	return t;
 }
 
 void ConsoleServices::clearConsole()
@@ -120,6 +136,19 @@ void ConsoleServices::askForFloat(string name, string description, GLfloat* resp
 	
 }
 
+void ConsoleServices::askForSeed(string name, string description, string* response)
+{
+	string userResponse = "";
+
+	printLine({ name });
+	printLine({ description });
+
+	cout << "  ->  ";
+	cin >> userResponse;
+
+	*response = userResponse;
+}
+
 bool ConsoleServices::isNumber(const std::string& s)
 {
 	std::string::const_iterator it = s.begin();
@@ -136,6 +165,22 @@ bool ConsoleServices::isFloat(const std::string& s)
 		++it;
 	}
 	return !s.empty() && it == s.end() && decimalCount >= 1;
+}
+
+void ConsoleServices::printTerrainConfig(GLuint& terrainSize, GLfloat& tileSize, string& slectedNoiseType, GLfloat& noiseFrequency, string& seed)
+{
+	printLine({ "+ -= Terrain Config =- " });
+	printLine({ "| Width: ", to_string(terrainSize) });
+	printLine({ "| Height: ", to_string(terrainSize) });
+	printLine({ "| Tile Size: ", to_string(tileSize) });
+	printLine({ "| Noise Type: ", slectedNoiseType });
+	printLine({ "| Noise Frequency: ", to_string(noiseFrequency) });
+	printLine({ "| Noise Seed: ", seed });
+	printLine({ "+ -------------------" });
+
+	printLine({ "| Building terrain. . ." });
+	printLine({ "+ ------------------- " });
+	printLine({ "\n\n" });
 }
 
 void ConsoleServices::printTerrainConfig(GLuint& terrainSize, GLfloat& tileSize, string& slectedNoiseType, GLfloat& noiseFrequency)
