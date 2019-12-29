@@ -1,9 +1,5 @@
 #include "InputManager.h"
 
-InputManager::InputManager()
-{
-}
-
 void InputManager::addKeyBinding(GLuint key, const Callback& callback)
 {
 	keypressCallbacks[key] = callback;

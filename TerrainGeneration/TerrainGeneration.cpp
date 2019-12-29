@@ -56,9 +56,14 @@ int main() {
 	glewInit();
 	GLuint program = programSetup();
 
+	Terrain* t;
+
+	inputManager->addKeyBinding(GLFW_KEY_UP, [&]() { t->increaseNoiseFrequency(); });
+	inputManager->addKeyBinding(GLFW_KEY_DOWN, [&]() { t->decreaseNoiseFrequency(); });
+
 	do {
 		// terrain and camera setup
-		Terrain* t = console.askForTerrain();
+		t = console.askForTerrain();
 		Camera cam = Camera(inputManager, time);
 
 		// mvp setup

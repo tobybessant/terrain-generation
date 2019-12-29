@@ -13,8 +13,6 @@ using Callback = std::function<void()>;
 class InputManager
 {
 public:
-	InputManager();
-	
 	void addKeyBinding(GLuint key, const Callback& callback);
 	void trigger(GLuint key, GLuint action);
 	void triggerMouseUpdate(GLdouble xpos, GLdouble ypos);

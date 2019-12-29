@@ -24,6 +24,18 @@ Terrain::Terrain(GLuint _size, GLfloat _tileSize, FastNoise::NoiseType _noiseTyp
 	createTerrain();
 }
 
+void Terrain::increaseNoiseFrequency()
+{
+	noiseFrequency += 0.04;
+	updateHeightmap();
+}
+
+void Terrain::decreaseNoiseFrequency()
+{
+	noiseFrequency -= 0.04;
+	updateHeightmap();
+}
+
 void Terrain::render(GLuint& program)
 {
 	glBindVertexArray(VAO);
@@ -44,6 +56,35 @@ void Terrain::createTerrain()
 {
 	generateVertices();
 	generateIndices();
+	loadIntoShader();
+}
+
+void Terrain::updateHeightmap()
+{
+	std::vector<std::vector<GLfloat>> colours = {
+		{ 0.0f, 0.0f, 1.0f, 1.0f }
+	};
+
+	noise.SetNoiseType(noiseType);
+	noise.SetFrequency(noiseFrequency);
+
+	for (size_t row = 0; row < width; row++)
+	{
+		GLuint rowIndexOffset = row * width * 9;
+		for (size_t col = 0; col < height; col++) {
+			GLuint colIndexOffset = col * 9;
+			GLuint vertexStartIndex = rowIndexOffset + colIndexOffset;
+			GLfloat y = noise.GetNoise(col, row);
+
+			// y pos
+			vertices[vertexStartIndex + 1] = y;
+
+			// colour
+			vertices[vertexStartIndex + 3] = y * 2;
+			vertices[vertexStartIndex + 4] = y;
+		}
+	}
+
 	loadIntoShader();
 }
 
@@ -106,6 +147,8 @@ void Terrain::generateIndices()
 
 void Terrain::loadIntoShader() 
 {
+	model = glm::mat4(1.0f);
+
 	glGenVertexArrays(1, &VAO);
 	glBindVertexArray(VAO);
 

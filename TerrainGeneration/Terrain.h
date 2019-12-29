@@ -17,6 +17,9 @@ public:
 	Terrain(GLuint _size, GLfloat _tileSize, FastNoise::NoiseType _noiseType, GLfloat _noiseFrequency);
 	Terrain(GLuint _size, GLfloat _tileSize, FastNoise::NoiseType _noiseType, GLfloat _noiseFrequency, GLuint seed);
 
+	void increaseNoiseFrequency();
+	void decreaseNoiseFrequency();
+
 	void render(GLuint& program);
 	glm::mat4 getModel();
 private:
@@ -30,14 +33,14 @@ private:
 	GLfloat fillG = 0.0f;
 	GLfloat fillB = 0.0f;
 
-	GLuint width = 1000;
-	GLuint height = 1000;
-	GLfloat tileSize = 0.02;
+	GLuint width;
+	GLuint height;
+	GLfloat tileSize;
 	GLuint seed;
 
 	FastNoise noise;
-	GLfloat noiseFrequency = 0.02;
-	FastNoise::NoiseType noiseType = FastNoise::Perlin;
+	GLfloat noiseFrequency;
+	FastNoise::NoiseType noiseType;
 
 	glm::mat4 model = glm::mat4(1.0f);
 
@@ -45,6 +48,9 @@ private:
 
 	void generateVertices();
 	void generateIndices();
+
+	void updateHeightmap();
+	
 	void loadIntoShader();
 };
 
