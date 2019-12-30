@@ -68,6 +68,9 @@ int main() {
 	inputManager->addKeyBinding(GLFW_KEY_EQUAL, [&]() { t->increaseNoiseFrequency(); });
 	inputManager->addKeyBinding(GLFW_KEY_MINUS, [&]() { t->decreaseNoiseFrequency(); });
 
+	inputManager->addKeyBinding(GLFW_KEY_0, [&]() { t->increaseOctaves(); });
+	inputManager->addKeyBinding(GLFW_KEY_9, [&]() { t->decreaseOctaves(); });
+
 	inputManager->addKeyBinding(GLFW_KEY_R, [&]() { t->regenerateTerrain(); });
 	do {
 		// terrain and camera setup
