@@ -9,6 +9,9 @@ Terrain::Terrain(GLuint _size, GLfloat _tileSize, FastNoise::NoiseType _noiseTyp
 	noiseFrequency = _noiseFrequency;
 	seed = rand();
 
+	octaves = 4;
+	magnitude = 4;
+
 	createTerrain();
 }
 
@@ -21,19 +24,52 @@ Terrain::Terrain(GLuint _size, GLfloat _tileSize, FastNoise::NoiseType _noiseTyp
 	noiseFrequency = _noiseFrequency;
 	seed = _seed;
 
+	magnitude = 4;
+
 	createTerrain();
 }
 
 void Terrain::increaseNoiseFrequency()
 {
-	noiseFrequency += 0.04;
-	updateHeightmap();
+	noiseFrequency += 0.005;
+	updateHeightmap(false);
 }
 
 void Terrain::decreaseNoiseFrequency()
 {
-	noiseFrequency -= 0.04;
-	updateHeightmap();
+	noiseFrequency -= 0.005;
+	updateHeightmap(false);
+}
+
+void Terrain::increaseMagnitude()
+{
+	magnitude++;
+	updateHeightmap(false);
+}
+
+void Terrain::decreaseMagnitude()
+{
+	magnitude--;
+	updateHeightmap(false);
+}
+
+void Terrain::decreaseOctaves()
+{
+	if (octaves > 0) {
+		octaves--;
+		updateHeightmap(false);
+	}
+}
+
+void Terrain::increaseOctaves()
+{
+	octaves++;
+	updateHeightmap(false);
+}
+
+void Terrain::regenerateTerrain()
+{
+	updateHeightmap(true);
 }
 
 void Terrain::render(GLuint& program)
@@ -59,15 +95,25 @@ void Terrain::createTerrain()
 	loadIntoShader();
 }
 
-void Terrain::updateHeightmap()
+void Terrain::updateHeightmap(GLboolean useNewSeed)
 {
 	const int step = 9;
+
 	std::vector<std::vector<GLfloat>> colours = {
-		{ 0.0f, 0.0f, 1.0f, 1.0f }
+		//  r     g     b
+		{ 0.25f, 0.36f, 1.56f, }, // water
+		{ 0.49f, 0.72f, 0.45f, }, // land
+		{ 0.45f, 0.72f, 0.46f, }, // higher land
+		{ 1.0f, 1.0f, 1.0f, } // snow
 	};
 
 	noise.SetNoiseType(noiseType);
 	noise.SetFrequency(noiseFrequency);
+	noise.SetFractalOctaves(octaves);
+
+	if (useNewSeed) {
+		noise.SetSeed(rand());
+	}
 
 	for (size_t row = 0; row < width; row++)
 	{
@@ -75,14 +121,33 @@ void Terrain::updateHeightmap()
 		for (size_t col = 0; col < height; col++) {
 			GLuint colIndexOffset = col * step;
 			GLuint vertexStartIndex = rowIndexOffset + colIndexOffset;
-			GLfloat y = noise.GetNoise(col, row);
+			GLfloat y = magnitude * noise.GetNoise(col, row);
+			y = pow(y, 2);
 
 			// y pos
 			vertices[vertexStartIndex + 1] = y;
 
 			// colour
-			vertices[vertexStartIndex + 3] = y * 2;
-			vertices[vertexStartIndex + 4] = y;
+			if (y < 0.06) {
+				vertices[vertexStartIndex + 3] = colours[0][0];
+				vertices[vertexStartIndex + 4] = colours[0][1];
+				vertices[vertexStartIndex + 5] = colours[0][2];
+			}												 
+			else if (y < 1.2) {								 
+				vertices[vertexStartIndex + 3] = colours[1][0];
+				vertices[vertexStartIndex + 4] = colours[1][1];
+				vertices[vertexStartIndex + 5] = colours[1][2];
+			}												  
+			else if (y < 2.0) {								  
+				vertices[vertexStartIndex + 3] = colours[2][0];
+				vertices[vertexStartIndex + 4] = colours[2][1];
+				vertices[vertexStartIndex + 5] = colours[2][2];
+			}												 
+			else {											 
+				vertices[vertexStartIndex + 3] = colours[3][0];
+				vertices[vertexStartIndex + 4] = colours[3][1];
+				vertices[vertexStartIndex + 5] = colours[3][2];
+			}
 		}
 	}
 
@@ -96,13 +161,11 @@ glm::mat4 Terrain::getModel()
 
 void Terrain::generateVertices()
 {
+	noise.SetFractalOctaves(octaves);
 	noise.SetNoiseType(noiseType);
 	noise.SetFrequency(noiseFrequency);
 	noise.SetSeed(seed);
 
-	std::vector<std::vector<GLfloat>> colours = {
-		{ 0.0f, 0.0f, 1.0f, 1.0f }
-	};
 
 	for (size_t row = 0; row < width; row++)
 	{
@@ -110,17 +173,19 @@ void Terrain::generateVertices()
 		for (size_t col = 0; col < height; col++) {
 
 			// position
-			GLfloat y = noise.GetNoise(col, row);
+			GLfloat y = magnitude * noise.GetNoise(col, row);
+
+			//std::cout << "elevation: " << elevation << std::endl;
+			y = pow(y, 2);
+			//std::cout << "y: " << y << std::endl;
+
 			vertices.push_back((GLfloat)col * tileSize);
 			vertices.push_back(y);
 			vertices.push_back((GLfloat)rowOffset);
 
 			// polygon lines colour
-			std::vector<GLfloat> colour = colours[col % colours.size()];
-			vertices.push_back(y * 2);
-			vertices.push_back(y);
-			vertices.push_back(colour[2]);
-
+			addColourForHeight(y);
+			
 			// polygon fill colour
 			vertices.push_back(fillR);
 			vertices.push_back(fillG);
@@ -143,6 +208,38 @@ void Terrain::generateIndices()
 			indices.push_back(index + 1);
 			indexCounter = 0;
 		}
+	}
+}
+
+void Terrain::addColourForHeight(GLfloat& y)
+{
+	std::vector<std::vector<GLfloat>> colours = {
+		//  r     g     b
+		{ 0.25f, 0.36f, 1.56f, }, // water
+		{ 0.49f, 0.72f, 0.45f, }, // land
+		{ 0.45f, 0.72f, 0.46f, }, // higher land
+		{ 1.0f, 1.0f, 1.0f, } // snow
+	};
+
+	if (y < 0.06) {
+		vertices.push_back(colours[0][0]);
+		vertices.push_back(colours[0][1]);
+		vertices.push_back(colours[0][2]);
+	}
+	else if (y < 1.2) {
+		vertices.push_back(colours[1][0]);
+		vertices.push_back(colours[1][1]);
+		vertices.push_back(colours[1][2]);
+	}
+	else if (y < 2.0) {
+		vertices.push_back(colours[2][0]);
+		vertices.push_back(colours[2][1]);
+		vertices.push_back(colours[2][2]);
+	}
+	else {
+		vertices.push_back(colours[3][0]);
+		vertices.push_back(colours[3][1]);
+		vertices.push_back(colours[3][2]);
 	}
 }
 

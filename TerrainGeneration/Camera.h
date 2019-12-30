@@ -25,7 +25,7 @@ private:
 	glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
 
 	// cam cofig
-	GLfloat speed = 5.0f;
+	GLfloat speed = 15.0f;
 	GLfloat yaw = -90.0f;
 	GLfloat pitch = 0.0f;
 	GLfloat sensitivity = 0.05;

@@ -55,16 +55,20 @@ int main() {
 	Camera cam = Camera(inputManager, time);
 	// mvp setup
 	glm::mat4 mvp;
-	glm::mat4 projection = glm::perspective(45.0f, 16.0f / 9, 0.1f, 20.0f);
+	glm::mat4 projection = glm::perspective(45.0f, 16.0f / 9, 0.1f, 900.0f);
 
 	glewInit();
 	GLuint program = programSetup();
 
 	Terrain* t;
 
-	inputManager->addKeyBinding(GLFW_KEY_UP, [&]() { t->increaseNoiseFrequency(); });
-	inputManager->addKeyBinding(GLFW_KEY_DOWN, [&]() { t->decreaseNoiseFrequency(); });
+	inputManager->addKeyBinding(GLFW_KEY_UP, [&]() { t->increaseMagnitude(); });
+	inputManager->addKeyBinding(GLFW_KEY_DOWN, [&]() { t->decreaseMagnitude(); });
 
+	inputManager->addKeyBinding(GLFW_KEY_EQUAL, [&]() { t->increaseNoiseFrequency(); });
+	inputManager->addKeyBinding(GLFW_KEY_MINUS, [&]() { t->decreaseNoiseFrequency(); });
+
+	inputManager->addKeyBinding(GLFW_KEY_R, [&]() { t->regenerateTerrain(); });
 	do {
 		// terrain and camera setup
 		t = console.askForTerrain();

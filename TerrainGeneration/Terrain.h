@@ -10,6 +10,7 @@
 
 #include <vector>
 #include <iostream>
+#include <math.h> 
 
 class Terrain
 {
@@ -19,6 +20,14 @@ public:
 
 	void increaseNoiseFrequency();
 	void decreaseNoiseFrequency();
+
+	void increaseMagnitude();
+	void decreaseMagnitude();
+
+	void increaseOctaves();
+	void decreaseOctaves();
+	
+	void regenerateTerrain();
 
 	void render(GLuint& program);
 	glm::mat4 getModel();
@@ -37,6 +46,8 @@ private:
 	GLuint height;
 	GLfloat tileSize;
 	GLuint seed;
+	GLuint octaves;
+	GLint magnitude;
 
 	FastNoise noise;
 	GLfloat noiseFrequency;
@@ -49,7 +60,9 @@ private:
 	void generateVertices();
 	void generateIndices();
 
-	void updateHeightmap();
+	void addColourForHeight(GLfloat& y);
+
+	void updateHeightmap(GLboolean useNewSeed);
 	
 	void loadIntoShader();
 };
