@@ -35,6 +35,11 @@ void GLFWServices::intialiseWindow(const char* name)
 	hideWindow();
 }
 
+void GLFWServices::destroyWindow()
+{
+	glfwDestroyWindow(window);
+}
+
 void GLFWServices::hideWindow()
 {
 	glfwHideWindow(window);

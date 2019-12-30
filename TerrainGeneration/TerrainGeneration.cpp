@@ -52,6 +52,10 @@ int main() {
 	glfw.intialiseWindow("Terrain Generator");
 
 	Time* time = new Time();
+	Camera cam = Camera(inputManager, time);
+	// mvp setup
+	glm::mat4 mvp;
+	glm::mat4 projection = glm::perspective(45.0f, 16.0f / 9, 0.1f, 20.0f);
 
 	glewInit();
 	GLuint program = programSetup();
@@ -64,11 +68,6 @@ int main() {
 	do {
 		// terrain and camera setup
 		t = console.askForTerrain();
-		Camera cam = Camera(inputManager, time);
-
-		// mvp setup
-		glm::mat4 mvp;
-		glm::mat4 projection = glm::perspective(45.0f, 16.0f / 9, 0.1f, 20.0f);
 
 		glfw.showWindow();
 		while (!glfw.windowShouldClose()) {

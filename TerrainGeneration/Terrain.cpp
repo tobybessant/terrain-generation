@@ -61,6 +61,7 @@ void Terrain::createTerrain()
 
 void Terrain::updateHeightmap()
 {
+	const int step = 9;
 	std::vector<std::vector<GLfloat>> colours = {
 		{ 0.0f, 0.0f, 1.0f, 1.0f }
 	};
@@ -70,9 +71,9 @@ void Terrain::updateHeightmap()
 
 	for (size_t row = 0; row < width; row++)
 	{
-		GLuint rowIndexOffset = row * width * 9;
+		GLuint rowIndexOffset = row * width * step;
 		for (size_t col = 0; col < height; col++) {
-			GLuint colIndexOffset = col * 9;
+			GLuint colIndexOffset = col * step;
 			GLuint vertexStartIndex = rowIndexOffset + colIndexOffset;
 			GLfloat y = noise.GetNoise(col, row);
 
