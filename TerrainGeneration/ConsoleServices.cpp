@@ -8,7 +8,7 @@ Terrain* ConsoleServices::askForTerrain()
 	// ask for terrain size
 	GLuint terrainSize;
 	askForUnsignedInt("-= Terrain Size =-",
-					  "Single integer value that will be the height & width of the terrain. RECOMMENDED: 500 - 1500",
+					  "Single integer value that will be the height & width of the terrain. RECOMMENDED: 300 - 600",
 					  &terrainSize);
 	clearConsole();
 	printTerrainConfig(terrainSize);
@@ -16,7 +16,7 @@ Terrain* ConsoleServices::askForTerrain()
 	// ask for tile size
 	GLfloat tileSize;
 	askForFloat("-= Tile Size =-",
-				"Width and height of each tile. RECOMMENDED: 0.01 - 0.2",
+				"Width and height of each tile. RECOMMENDED: 0.01 - 0.1",
 				&tileSize);
 	clearConsole();
 	printTerrainConfig(terrainSize, tileSize);
@@ -41,7 +41,7 @@ Terrain* ConsoleServices::askForTerrain()
 	// ask for noise frequency
 	GLfloat noiseFrequency;
 	askForFloat("-= Noise Frequency =-",
-				"Frequency of the noise to be generated. RECOMMENDED: 0.01 - 0.1",
+				"Frequency of the noise to be generated. RECOMMENDED: 0.01",
 				&noiseFrequency);
 	clearConsole();
 	printTerrainConfig(terrainSize, tileSize, noiseTypes[selectedNoiseTypeIndex], noiseFrequency);

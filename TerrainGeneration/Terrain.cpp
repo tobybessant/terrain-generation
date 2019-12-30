@@ -24,6 +24,7 @@ Terrain::Terrain(GLuint _size, GLfloat _tileSize, FastNoise::NoiseType _noiseTyp
 	noiseFrequency = _noiseFrequency;
 	seed = _seed;
 
+	octaves = 4;
 	magnitude = 4;
 
 	createTerrain();
@@ -31,39 +32,39 @@ Terrain::Terrain(GLuint _size, GLfloat _tileSize, FastNoise::NoiseType _noiseTyp
 
 void Terrain::increaseNoiseFrequency()
 {
-	noiseFrequency += 0.005;
+	noiseFrequency += (noiseFrequency * 0.1);
 	updateHeightmap(false);
 }
 
 void Terrain::decreaseNoiseFrequency()
 {
-	noiseFrequency -= 0.005;
+	noiseFrequency -= (noiseFrequency * 0.1);
 	updateHeightmap(false);
 }
 
 void Terrain::increaseMagnitude()
 {
-	magnitude++;
+	++magnitude;
 	updateHeightmap(false);
 }
 
 void Terrain::decreaseMagnitude()
 {
-	magnitude--;
+	--magnitude;
 	updateHeightmap(false);
 }
 
 void Terrain::decreaseOctaves()
 {
 	if (octaves > 0) {
-		octaves--;
+		--octaves;
 		updateHeightmap(false);
 	}
 }
 
 void Terrain::increaseOctaves()
 {
-	octaves++;
+	++octaves;
 	updateHeightmap(false);
 }
 
@@ -138,7 +139,7 @@ void Terrain::updateHeightmap(GLboolean useNewSeed)
 				vertices[vertexStartIndex + 4] = colours[1][1];
 				vertices[vertexStartIndex + 5] = colours[1][2];
 			}												  
-			else if (y < 2.0) {								  
+			else if (y < magnitude - (magnitude * 0.1)) {
 				vertices[vertexStartIndex + 3] = colours[2][0];
 				vertices[vertexStartIndex + 4] = colours[2][1];
 				vertices[vertexStartIndex + 5] = colours[2][2];
@@ -174,10 +175,7 @@ void Terrain::generateVertices()
 
 			// position
 			GLfloat y = magnitude * noise.GetNoise(col, row);
-
-			//std::cout << "elevation: " << elevation << std::endl;
 			y = pow(y, 2);
-			//std::cout << "y: " << y << std::endl;
 
 			vertices.push_back((GLfloat)col * tileSize);
 			vertices.push_back(y);
@@ -231,7 +229,7 @@ void Terrain::addColourForHeight(GLfloat& y)
 		vertices.push_back(colours[1][1]);
 		vertices.push_back(colours[1][2]);
 	}
-	else if (y < 2.0) {
+	else if (y < (magnitude - (magnitude * 0.1) )) {
 		vertices.push_back(colours[2][0]);
 		vertices.push_back(colours[2][1]);
 		vertices.push_back(colours[2][2]);
