@@ -1,4 +1,6 @@
 #pragma once
+#define _USE_MATH_DEFINES
+
 #include "Dependencies/FastNoise/FastNoise.h"
 #include <GL\glew.h>
 #include <GLFW\glfw3.h>
@@ -11,6 +13,7 @@
 #include <vector>
 #include <iostream>
 #include <math.h> 
+#include <cmath>
 
 class Terrain
 {
@@ -26,6 +29,8 @@ public:
 
 	void increaseOctaves();
 	void decreaseOctaves();
+
+	void makeIsland();
 	
 	void regenerateTerrain();
 
@@ -44,6 +49,11 @@ private:
 
 	GLuint width;
 	GLuint height;
+
+	GLint centerX;
+	GLint centerY;
+	GLfloat maxDistance;
+
 	GLfloat tileSize;
 	GLuint seed;
 	GLuint octaves;

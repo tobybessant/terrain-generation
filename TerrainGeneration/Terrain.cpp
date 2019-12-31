@@ -4,10 +4,19 @@ Terrain::Terrain(GLuint _size, GLfloat _tileSize, FastNoise::NoiseType _noiseTyp
 {
 	width = _size;
 	height = _size;
+
+	centerX = roundf(width / 2);
+	centerY = roundf(height / 2);
+	maxDistance = sqrtf(pow(fabsf(centerX), 2) + pow(fabsf(centerY), 2));
+
+	std::cout << "cY: " << centerY << std::endl;
+	std::cout << "cX: " << centerX << std::endl;
+	std::cout << "mD: " << maxDistance << std::endl;
+
 	tileSize = _tileSize;
 	noiseType = _noiseType;
 	noiseFrequency = _noiseFrequency;
-	seed = rand();
+	seed = rand() % 1029;
 
 	octaves = 4;
 	magnitude = 4;
@@ -19,6 +28,11 @@ Terrain::Terrain(GLuint _size, GLfloat _tileSize, FastNoise::NoiseType _noiseTyp
 {
 	width = _size;
 	height = _size;
+
+	centerX = roundf(width / 2);
+	centerY = roundf(height / 2);
+	maxDistance = sqrtf(pow(fabsf(centerX), 2) + pow(fabsf(centerY), 2));
+
 	tileSize = _tileSize;
 	noiseType = _noiseType;
 	noiseFrequency = _noiseFrequency;
@@ -60,6 +74,69 @@ void Terrain::decreaseOctaves()
 		--octaves;
 		updateHeightmap(false);
 	}
+}
+
+void Terrain::makeIsland()
+{
+	const int step = 9;
+	for (GLint row = 0; row < width; row++)
+	{
+		GLuint rowIndexOffset = row * width * step;
+		for (GLint col = 0; col < height; col++) {
+			GLuint colIndexOffset = col * step;
+			GLuint vertexStartIndex = rowIndexOffset + colIndexOffset;
+
+			GLfloat diffX = fabsf(centerX - col);
+			GLfloat diffY = fabsf(centerY - row);
+
+			GLfloat distance = sqrtf(pow(diffX, 2) + pow(diffY, 2));
+			GLfloat distanceNrm = distance / maxDistance;
+
+			// std::cout << "[" << row << ", " << col << "]" << "diffX: " << diffX << " | " << "diffY: " << diffY << " | dist: " << distance << " | nrmD: " << distanceNrm << std::endl;
+			
+			GLfloat y = vertices[vertexStartIndex + 1];
+			// y = (1 + y - (distanceNrm * 2)) / 2;
+			
+			y = y * (1 - distanceNrm) + pow(M_E, (-5 * distanceNrm)) - distanceNrm;
+
+			if (y < 0.0f)
+				y = 0.0f;
+
+			vertices[vertexStartIndex + 1] = y; 
+
+			std::vector<std::vector<GLfloat>> colours = {
+				//  r     g     b
+				{ 0.25f, 0.36f, 1.56f, }, // water
+				{ 0.49f, 0.72f, 0.45f, }, // land
+				{ 0.45f, 0.72f, 0.46f, }, // higher land
+				{ 1.0f, 1.0f, 1.0f, } // snow
+			};
+
+			// colour
+			if (y < 0.06) {
+				vertices[vertexStartIndex + 3] = colours[0][0];
+				vertices[vertexStartIndex + 4] = colours[0][1];
+				vertices[vertexStartIndex + 5] = colours[0][2];
+			}
+			else if (y < 1.2) {
+				vertices[vertexStartIndex + 3] = colours[1][0];
+				vertices[vertexStartIndex + 4] = colours[1][1];
+				vertices[vertexStartIndex + 5] = colours[1][2];
+			}
+			else if (y < magnitude - (magnitude * 0.1)) {
+				vertices[vertexStartIndex + 3] = colours[2][0];
+				vertices[vertexStartIndex + 4] = colours[2][1];
+				vertices[vertexStartIndex + 5] = colours[2][2];
+			}
+			else {
+				vertices[vertexStartIndex + 3] = colours[3][0];
+				vertices[vertexStartIndex + 4] = colours[3][1];
+				vertices[vertexStartIndex + 5] = colours[3][2];
+			}
+		}
+	}
+
+	loadIntoShader();
 }
 
 void Terrain::increaseOctaves()
@@ -116,15 +193,15 @@ void Terrain::updateHeightmap(GLboolean useNewSeed)
 		noise.SetSeed(rand());
 	}
 
-	for (size_t row = 0; row < width; row++)
+	for (GLint row = 0; row < width; row++)
 	{
 		GLuint rowIndexOffset = row * width * step;
-		for (size_t col = 0; col < height; col++) {
+		for (GLint col = 0; col < height; col++) {
 			GLuint colIndexOffset = col * step;
 			GLuint vertexStartIndex = rowIndexOffset + colIndexOffset;
 			GLfloat y = magnitude * noise.GetNoise(col, row);
-			y = pow(y, 2);
 
+			y = pow(y, 2);
 			// y pos
 			vertices[vertexStartIndex + 1] = y;
 
@@ -149,9 +226,9 @@ void Terrain::updateHeightmap(GLboolean useNewSeed)
 				vertices[vertexStartIndex + 4] = colours[3][1];
 				vertices[vertexStartIndex + 5] = colours[3][2];
 			}
+			
 		}
 	}
-
 	loadIntoShader();
 }
 
@@ -168,10 +245,10 @@ void Terrain::generateVertices()
 	noise.SetSeed(seed);
 
 
-	for (size_t row = 0; row < width; row++)
+	for (GLint row = 0; row < width; row++)
 	{
 		GLfloat rowOffset = row * tileSize;
-		for (size_t col = 0; col < height; col++) {
+		for (GLint col = 0; col < height; col++) {
 
 			// position
 			GLfloat y = magnitude * noise.GetNoise(col, row);

@@ -70,6 +70,8 @@ int main() {
 
 	inputManager->addKeyBinding(GLFW_KEY_0, [&]() { t->increaseOctaves(); });
 	inputManager->addKeyBinding(GLFW_KEY_9, [&]() { t->decreaseOctaves(); });
+	
+	inputManager->addKeyBinding(GLFW_KEY_I, [&]() { t->makeIsland(); });
 
 	inputManager->addKeyBinding(GLFW_KEY_R, [&]() { t->regenerateTerrain(); });
 	do {
