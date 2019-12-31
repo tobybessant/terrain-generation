@@ -38,6 +38,10 @@ void Camera::registerKeypressCallbacks()
 	inputManager->addKeyBinding(GLFW_KEY_D, [&]() {
 		position += glm::normalize(glm::cross(forward, up)) * speed * time->deltaTime;
 	});
+
+	inputManager->addKeyBinding(GLFW_KEY_Q, [&]() {
+		cycleSpeed();
+	});
 }
 
 void Camera::updateCameraPosition(GLdouble mousePosX, GLdouble mousePosY)
@@ -70,4 +74,10 @@ void Camera::updateCameraPosition(GLdouble mousePosX, GLdouble mousePosY)
 	front.y = sin(glm::radians(pitch));
 	front.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
 	forward = glm::normalize(front);
+}
+
+void Camera::cycleSpeed()
+{
+	currentSpeedIndex = ++currentSpeedIndex % speeds.size() == 0 ? 0 : currentSpeedIndex;
+	speed = speeds[currentSpeedIndex];
 }

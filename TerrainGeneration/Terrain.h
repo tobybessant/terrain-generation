@@ -63,12 +63,24 @@ private:
 	GLfloat noiseFrequency;
 	FastNoise::NoiseType noiseType;
 
+	std::vector<std::vector<GLfloat>> colours = {
+		//  r     g     b
+		{ 0.25f, 0.36f, 1.56f, }, // water
+		{ 0.49f, 0.72f, 0.45f, }, // land
+		{ 0.45f, 0.72f, 0.46f, }, // higher land
+		{ 1.0f, 1.0f, 1.0f, } // snow
+	};
+
 	glm::mat4 model = glm::mat4(1.0f);
+
+	void setDefaults();
 
 	void createTerrain();
 
 	void generateVertices();
 	void generateIndices();
+
+	void initBuffers();
 
 	void addColourForHeight(GLfloat& y);
 

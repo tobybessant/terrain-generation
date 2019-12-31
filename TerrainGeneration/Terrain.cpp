@@ -5,22 +5,12 @@ Terrain::Terrain(GLuint _size, GLfloat _tileSize, FastNoise::NoiseType _noiseTyp
 	width = _size;
 	height = _size;
 
-	centerX = roundf(width / 2);
-	centerY = roundf(height / 2);
-	maxDistance = sqrtf(pow(fabsf(centerX), 2) + pow(fabsf(centerY), 2));
-
-	std::cout << "cY: " << centerY << std::endl;
-	std::cout << "cX: " << centerX << std::endl;
-	std::cout << "mD: " << maxDistance << std::endl;
-
 	tileSize = _tileSize;
 	noiseType = _noiseType;
 	noiseFrequency = _noiseFrequency;
-	seed = rand() % 1029;
+	seed = rand();
 
-	octaves = 4;
-	magnitude = 4;
-
+	setDefaults();
 	createTerrain();
 }
 
@@ -29,18 +19,12 @@ Terrain::Terrain(GLuint _size, GLfloat _tileSize, FastNoise::NoiseType _noiseTyp
 	width = _size;
 	height = _size;
 
-	centerX = roundf(width / 2);
-	centerY = roundf(height / 2);
-	maxDistance = sqrtf(pow(fabsf(centerX), 2) + pow(fabsf(centerY), 2));
-
 	tileSize = _tileSize;
 	noiseType = _noiseType;
 	noiseFrequency = _noiseFrequency;
 	seed = _seed;
 
-	octaves = 4;
-	magnitude = 4;
-
+	setDefaults();
 	createTerrain();
 }
 
@@ -92,25 +76,14 @@ void Terrain::makeIsland()
 			GLfloat distance = sqrtf(pow(diffX, 2) + pow(diffY, 2));
 			GLfloat distanceNrm = distance / maxDistance;
 
-			// std::cout << "[" << row << ", " << col << "]" << "diffX: " << diffX << " | " << "diffY: " << diffY << " | dist: " << distance << " | nrmD: " << distanceNrm << std::endl;
-			
 			GLfloat y = vertices[vertexStartIndex + 1];
-			// y = (1 + y - (distanceNrm * 2)) / 2;
 			
 			y = y * (1 - distanceNrm) + pow(M_E, (-5 * distanceNrm)) - distanceNrm;
 
 			if (y < 0.0f)
 				y = 0.0f;
 
-			vertices[vertexStartIndex + 1] = y; 
-
-			std::vector<std::vector<GLfloat>> colours = {
-				//  r     g     b
-				{ 0.25f, 0.36f, 1.56f, }, // water
-				{ 0.49f, 0.72f, 0.45f, }, // land
-				{ 0.45f, 0.72f, 0.46f, }, // higher land
-				{ 1.0f, 1.0f, 1.0f, } // snow
-			};
+			vertices[vertexStartIndex + 1] = y;
 
 			// colour
 			if (y < 0.06) {
@@ -166,24 +139,27 @@ void Terrain::render(GLuint& program)
 	glDrawElements(GL_TRIANGLE_STRIP, indices.size(), GL_UNSIGNED_INT, 0);
 }
 
+void Terrain::setDefaults()
+{
+	octaves = 4;
+	magnitude = 4;
+
+	centerX = roundf(width / 2);
+	centerY = roundf(height / 2);
+	maxDistance = sqrtf(pow(fabsf(centerX), 2) + pow(fabsf(centerY), 2));
+}
+
 void Terrain::createTerrain()
 {
 	generateVertices();
 	generateIndices();
+	initBuffers();
 	loadIntoShader();
 }
 
 void Terrain::updateHeightmap(GLboolean useNewSeed)
 {
 	const int step = 9;
-
-	std::vector<std::vector<GLfloat>> colours = {
-		//  r     g     b
-		{ 0.25f, 0.36f, 1.56f, }, // water
-		{ 0.49f, 0.72f, 0.45f, }, // land
-		{ 0.45f, 0.72f, 0.46f, }, // higher land
-		{ 1.0f, 1.0f, 1.0f, } // snow
-	};
 
 	noise.SetNoiseType(noiseType);
 	noise.SetFrequency(noiseFrequency);
@@ -286,16 +262,17 @@ void Terrain::generateIndices()
 	}
 }
 
+void Terrain::initBuffers()
+{
+	glGenVertexArrays(1, &VAO);
+	glBindVertexArray(VAO);
+
+	glGenBuffers(1, &VBO);
+	glGenBuffers(1, &EBO);
+}
+
 void Terrain::addColourForHeight(GLfloat& y)
 {
-	std::vector<std::vector<GLfloat>> colours = {
-		//  r     g     b
-		{ 0.25f, 0.36f, 1.56f, }, // water
-		{ 0.49f, 0.72f, 0.45f, }, // land
-		{ 0.45f, 0.72f, 0.46f, }, // higher land
-		{ 1.0f, 1.0f, 1.0f, } // snow
-	};
-
 	if (y < 0.06) {
 		vertices.push_back(colours[0][0]);
 		vertices.push_back(colours[0][1]);
@@ -321,12 +298,6 @@ void Terrain::addColourForHeight(GLfloat& y)
 void Terrain::loadIntoShader() 
 {
 	model = glm::mat4(1.0f);
-
-	glGenVertexArrays(1, &VAO);
-	glBindVertexArray(VAO);
-
-	glGenBuffers(1, &VBO);
-	glGenBuffers(1, &EBO);
 
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * vertices.size(), &vertices[0], GL_STATIC_DRAW);

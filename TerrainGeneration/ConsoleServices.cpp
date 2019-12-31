@@ -8,7 +8,7 @@ Terrain* ConsoleServices::askForTerrain()
 	// ask for terrain size
 	GLuint terrainSize;
 	askForUnsignedInt("-= Terrain Size =-",
-					  "Single integer value that will be the height & width of the terrain. RECOMMENDED: 300 - 600",
+					  "Provide one whole number value that will be the height & width of the terrain. RECOMMENDED: 300 - 600",
 					  &terrainSize);
 	clearConsole();
 	printTerrainConfig(terrainSize);
@@ -16,7 +16,7 @@ Terrain* ConsoleServices::askForTerrain()
 	// ask for tile size
 	GLfloat tileSize;
 	askForFloat("-= Tile Size =-",
-				"Width and height of each tile. RECOMMENDED: 0.01 - 0.1",
+				"Width and height of each tile. RECOMMENDED: 0.05 - 0.3",
 				&tileSize);
 	clearConsole();
 	printTerrainConfig(terrainSize, tileSize);
@@ -25,11 +25,11 @@ Terrain* ConsoleServices::askForTerrain()
 	GLuint selectedNoiseTypeIndex;
 	FastNoise::NoiseType noiseType;
 	vector<string> noiseTypes { "Value", "Value Fractal", "Perlin", "Perlin Fractal", "Simplex", "Simplex Fractal", "Cellular", "White Noise", "Cubic", "Cubic Fractal" };
-	string noiseTypesDescription = "Noise algorithm used to generate the height map.\n";
+	string noiseTypesDescription = "Noise algorithm used to generate the height map. Fractal algorithms will have access to altering the number of Octaves (noise layers) used.\n";
 
 	for (int i = 0; i < noiseTypes.size(); i++)
 	{
-		noiseTypesDescription += to_string(i) + " = " + noiseTypes[i] + "\n";
+		noiseTypesDescription += "  " + to_string(i) + " = " + noiseTypes[i] + "\n";
 	}
 
 	noiseTypesDescription += "\n  Enter desired noise index: ";
@@ -50,7 +50,7 @@ Terrain* ConsoleServices::askForTerrain()
 	string seed;
 	string seedDisplay = "Random";
 	askForSeed("-= Noise Seed =-", 
-			   "Enter a terrain seed (any positive or negative whole integer, for random seed enter 'r')", 
+			   "Enter a terrain seed (any positive or negative whole integer (max 10 digits), for random seed enter 'r')", 
 			   &seed);
 	clearConsole();
 	
@@ -139,12 +139,16 @@ void ConsoleServices::askForFloat(string name, string description, GLfloat* resp
 void ConsoleServices::askForSeed(string name, string description, string* response)
 {
 	string userResponse = "";
+	do {
+		if (!userResponse.empty())
+			printLine({ "Invalid value. Please enter one positive/negative number no longer than 9 digits in length" });
 
-	printLine({ name });
-	printLine({ description });
+		printLine({ name });
+		printLine({ description });
 
-	cout << "  ->  ";
-	cin >> userResponse;
+		cout << "  ->  ";
+		cin >> userResponse;
+	} while (userResponse.size() > 9);
 
 	*response = userResponse;
 }
@@ -193,8 +197,6 @@ void ConsoleServices::printTerrainConfig(GLuint& terrainSize, GLfloat& tileSize,
 	printLine({ "| Noise Frequency: ", to_string(noiseFrequency) });
 	printLine({ "+ -------------------" });
 
-	printLine({ "| Building terrain. . ." });
-	printLine({ "+ ------------------- " });
 	printLine({ "\n\n" });
 }
 

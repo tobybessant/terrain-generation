@@ -19,13 +19,16 @@ private:
 	InputManager* inputManager;
 	Time* time;
 
+	GLuint currentSpeedIndex = 0;
+	std::vector<GLfloat> speeds { 15.0f, 30.0f };
+
 	// cam positions
 	glm::vec3 position = glm::vec3(0.0f, 0.0f, 3.0f);
 	glm::vec3 forward = glm::vec3(0.0f, 0.0f, -1.0f);
 	glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
 
 	// cam cofig
-	GLfloat speed = 15.0f;
+	GLfloat speed = speeds[currentSpeedIndex];
 	GLfloat yaw = -90.0f;
 	GLfloat pitch = 0.0f;
 	GLfloat sensitivity = 0.05;
@@ -38,5 +41,6 @@ private:
 
 	void registerKeypressCallbacks();
 	void updateCameraPosition(GLdouble mousePosX, GLdouble mousePosY);
+	void cycleSpeed();
 };
 
