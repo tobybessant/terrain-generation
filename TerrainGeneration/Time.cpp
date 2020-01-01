@@ -6,3 +6,9 @@ void Time::update()
 	deltaTime = currentFrame - lastFrame;
 	lastFrame = currentFrame;
 }
+
+GLfloat Time::getDeltaTime()
+{
+	return deltaTime;
+}
+

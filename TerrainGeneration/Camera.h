@@ -29,9 +29,9 @@ private:
 
 	// cam cofig
 	GLfloat speed = speeds[currentSpeedIndex];
-	GLfloat yaw = -90.0f;
+	GLfloat yaw = 0.0f;
 	GLfloat pitch = 0.0f;
-	GLfloat sensitivity = 0.05;
+	GLfloat sensitivity = 5;
 
 	// mouse position details
 	GLboolean firstMouse = true;

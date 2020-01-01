@@ -24,19 +24,19 @@ void Camera::notify()
 void Camera::registerKeypressCallbacks()
 {
 	inputManager->addKeyBinding(GLFW_KEY_W, [&]() {
-		position += forward * speed * time->deltaTime;
+		position += forward * speed * time->getDeltaTime();
 	});
 
 	inputManager->addKeyBinding(GLFW_KEY_S, [&]() {
-		position -= forward * speed * time->deltaTime;
+		position -= forward * speed * time->getDeltaTime();
 	});
 
 	inputManager->addKeyBinding(GLFW_KEY_A, [&]() {
-		position -= glm::normalize(glm::cross(forward, up)) * speed * time->deltaTime;
+		position -= glm::normalize(glm::cross(forward, up)) * speed * time->getDeltaTime();
 	});
 
 	inputManager->addKeyBinding(GLFW_KEY_D, [&]() {
-		position += glm::normalize(glm::cross(forward, up)) * speed * time->deltaTime;
+		position += glm::normalize(glm::cross(forward, up)) * speed * time->getDeltaTime();
 	});
 
 	inputManager->addKeyBinding(GLFW_KEY_Q, [&]() {
@@ -58,8 +58,8 @@ void Camera::updateCameraPosition(GLdouble mousePosX, GLdouble mousePosY)
 	lastX = mousePosX;
 	lastY = mousePosY;
 
-	xoffset *= sensitivity;
-	yoffset *= sensitivity;
+	xoffset *= sensitivity * time->getDeltaTime();
+	yoffset *= sensitivity * time->getDeltaTime();
 
 	yaw += xoffset;
 	pitch += yoffset;

@@ -4,7 +4,7 @@ This project showcases the use of noise functions when procedurally generating 3
 ## Generating Terrains / User Guide
 This program runs from the command-line, and on starting will ask for various parameters to generate the base terrain. Once the parameters have been entered, it will open the generated terrain in fullscreen-windowed mode. The terrain can be live-updated and tweaked using the various hot-keys specified below.
 
-### Setup (if not using executable)
+### Setup
 Once you have downloaded/cloned the solution, you will need to install the dependencies. These dependencies should already be in the NuGet Packages for the project, to install them:
 
 1. Right Click Solution > 'Restore NuGet Packages for the solution'

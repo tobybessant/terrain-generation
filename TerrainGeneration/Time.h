@@ -5,10 +5,10 @@
 class Time
 {
 public:
-	GLfloat deltaTime = 0.0f;
-	
 	void update();
+	GLfloat getDeltaTime();
 private:
+	GLfloat deltaTime = 0.0f;
 	GLfloat lastFrame = 0.0f;
 };
 
