@@ -58,4 +58,12 @@ The second responsibility of the Terrain class, is to render the terrain vertice
 ### 4. Listen for Updates and Re-render
 The final aspect of the application handles managing the terrain once it has been rendered. To allow the user to easily tweak the terrain without having to exit and re-enter all parameters, it was important to implement live-updating of terrain values. The ```InputManager``` class is used by GLFW to listen for user input - on keypress the ```InputManager``` class will look up registered callbacks for the pressed key in its ```keypressCallbacks``` dictionary. On program setup, the various ```Terrain``` class update methods are registered to their corresponding keys. The actual update process consists of editing a property on the terrain, and then updating the vertex data. Updating the heightmap is done by iterating over the vertices, identifying which values represent the height of each vertex, and regenerating it accordingly. Once all vertices have been updated, the data is re-loaded into the GPU buffers for rendering.
 
-### Other Implementation details
+### Other Implementation Details
+## Camera
+To enable the player to 'fly' around the terrain they have created, I designed a ```Camera``` class, that uses the ```Input Manager``` to both register key presses, as well as subscribe to any new mouse updates through the use of an observer pattern.
+
+## Time
+To ensure particular updates are consistent across machines - such as the speed of the camera - I added a ```Time``` class that tracks the current frame state and calculates the ```deltaTime``` which can then be used in the camera movement calculations.
+
+## FastNoise
+Auburn's FastNoise library has been used to generate the noise-based height map. It was chosen based on its optimal combination of noise-generation speed and feature set. With 9 different noise types, it allows my program to offer many different outputs to the user. The library can generate noise based on provided X & Y coordinates. This worked well with my set up, as I generate the grid (columns and rows) at the same time as I build their vertex data, allowing me to generate the height of each vertex with their current column (x) and row (y) values.
