@@ -4,13 +4,21 @@ This project showcases the use of noise functions when procedurally generating 3
 ## Generating Terrains / User Guide
 This program runs from the command-line, and on starting will ask for various parameters to generate the base terrain. Once the parameters have been entered, it will open the generated terrain in fullscreen-windowed mode. The terrain can be live-updated and tweaked using the various hot-keys specified below.
 
+### Setup (if not using executable)
+Once you have downloaded/cloned the solution, you will need to install the dependencies. These dependencies should already be in the NuGet Packages for the project, to install them:
+
+1. Right Click Solution > 'Restore NuGet Packages for the solution'
+2. Right Click Project > 'Rescan the project for dependencies'
+
+At this point the project should be ready to build.
+
 ### Controls
 | Key  | Action |
 | ------------- | ------------- |
 | W/A/S/D & Mouse | Fly / move camera |
 | Q | Increase fly speed (toggle faster / slower) |
 | Esc | Exit to terminal |
-| R | Re-generate terrain with new seed |
+| R | Re-generate terrain with current parameters & new seed |
 | + | Increase noise frequency (10% increments)  |
 | - | Decrease noise frequency (10% increments)  |
 | Up Arrow | Increase terrain magnitude  |
@@ -67,3 +75,12 @@ To ensure particular updates are consistent across machines - such as the speed 
 
 ## FastNoise
 Auburn's FastNoise library has been used to generate the noise-based height map. It was chosen based on its optimal combination of noise-generation speed and feature set. With 9 different noise types, it allows my program to offer many different outputs to the user. The library can generate noise based on provided X & Y coordinates. This worked well with my set up, as I generate the grid (columns and rows) at the same time as I build their vertex data, allowing me to generate the height of each vertex with their current column (x) and row (y) values.
+
+# Miscellaneous
+## Inspiration & Differences from Other Programs
+The main driver for creating the application was to learn something about PCG, as it is a topic I am interested in but never had the opportunity to implement it in software. The decision to use noise-based terrain generation was based on it being an achievable PCG implementation for the given time frame.
+
+Noise-based terrain generation is very popular, however I have made an effort to make my program unique where possible. The main features that differentiate my program from other programs are the ability to 'fly' through the terrain, this allows the user to see their terrain from many different angles / perspectives. Secondly, I believe my 'island-ification' functionality is fairly unique, having defined my own curve function to lower vertex heights depending on their distance from the centre.
+
+## What I Started With
+This project started from a new/blank project, not related to my previous Model Loader submission. The only resource pulled across / not originally written for this submission was the module-provided sample ShaderLoader code, to load my simplified shaders into a shader program.
