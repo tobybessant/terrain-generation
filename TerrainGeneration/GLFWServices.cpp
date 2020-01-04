@@ -3,11 +3,10 @@
 void keypressHandler(GLFWwindow* window, int key, int scancode, int action, int mods);
 void mouseHandler(GLFWwindow* window, double xpos, double ypos);
 
-GLFWServices::GLFWServices(InputManager* _inputManager)
+GLFWServices::GLFWServices(InputManager* _inputManager) :
+	inputManager(_inputManager)
 {
-	inputManager = _inputManager;
 	glfwInit();
-
 	registerKeypressCallbacks();
 }
 

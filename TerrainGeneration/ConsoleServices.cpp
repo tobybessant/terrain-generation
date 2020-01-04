@@ -3,7 +3,7 @@
 Terrain* ConsoleServices::askForTerrain()
 {
 	clearConsole();
-	cout << "  -=| NEW TERRAIN |=-\n\n" << endl;
+	printLine({"-= NEW TERRAIN =-\n"});
 
 	// ask for terrain size
 	GLuint terrainSize;

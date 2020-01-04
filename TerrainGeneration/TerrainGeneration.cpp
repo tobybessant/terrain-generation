@@ -53,6 +53,7 @@ int main() {
 
 	Time* time = new Time();
 	Camera cam = Camera(inputManager, time);
+
 	// mvp setup
 	glm::mat4 mvp;
 	glm::mat4 projection = glm::perspective(45.0f, 16.0f / 9, 0.1f, 900.0f);
@@ -61,6 +62,10 @@ int main() {
 	GLuint program = programSetup();
 
 	Terrain* t;
+
+	inputManager->addKeyBinding(GLFW_KEY_C, [&]() {
+		cam.setLocationToTerrainCenter(t);
+	});
 
 	inputManager->addKeyBinding(GLFW_KEY_UP, [&]() { t->increaseMagnitude(); });
 	inputManager->addKeyBinding(GLFW_KEY_DOWN, [&]() { t->decreaseMagnitude(); });
@@ -74,9 +79,11 @@ int main() {
 	inputManager->addKeyBinding(GLFW_KEY_I, [&]() { t->makeIsland(); });
 
 	inputManager->addKeyBinding(GLFW_KEY_R, [&]() { t->regenerateTerrain(); });
+
 	do {
 		// terrain and camera setup
 		t = console.askForTerrain();
+		cam.setLocationToTerrainCenter(t);
 
 		glfw.showWindow();
 		while (!glfw.windowShouldClose()) {

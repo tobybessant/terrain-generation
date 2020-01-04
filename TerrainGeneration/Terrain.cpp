@@ -1,31 +1,23 @@
 #include "Terrain.h"
 
-Terrain::Terrain(GLuint _size, GLfloat _tileSize, FastNoise::NoiseType _noiseType, GLfloat _noiseFrequency)
+Terrain::Terrain(GLuint _size, GLfloat _tileSize, FastNoise::NoiseType _noiseType, GLfloat _noiseFrequency) :
+	width(_size), height(_size), tileSize(_tileSize), noiseType(_noiseType), noiseFrequency(_noiseFrequency), seed(rand())
 {
-	width = _size;
-	height = _size;
-
-	tileSize = _tileSize;
-	noiseType = _noiseType;
-	noiseFrequency = _noiseFrequency;
-	seed = rand();
-
 	setDefaults();
 	createTerrain();
 }
 
-Terrain::Terrain(GLuint _size, GLfloat _tileSize, FastNoise::NoiseType _noiseType, GLfloat _noiseFrequency, GLuint _seed)
+Terrain::Terrain(GLuint _size, GLfloat _tileSize, FastNoise::NoiseType _noiseType, GLfloat _noiseFrequency, GLuint _seed) :
+	width(_size), height(_size), tileSize(_tileSize), noiseType(_noiseType), noiseFrequency(_noiseFrequency), seed(_seed)
 {
-	width = _size;
-	height = _size;
-
-	tileSize = _tileSize;
-	noiseType = _noiseType;
-	noiseFrequency = _noiseFrequency;
-	seed = _seed;
-
 	setDefaults();
 	createTerrain();
+}
+
+glm::vec3 Terrain::getFirstVertexPosition()
+{
+	// returns position of first vertex in grid , before the terrain is centre translated (so this will return { 0, noise(), 0 })
+	return glm::vec3(vertices[0], vertices[1], vertices[2]);
 }
 
 void Terrain::increaseNoiseFrequency()
@@ -62,50 +54,44 @@ void Terrain::decreaseOctaves()
 
 void Terrain::makeIsland()
 {
+	// step for each vertex data set
 	const int step = 9;
+
+	// iterate rows and columns, and insert new height & colour values 
 	for (GLint row = 0; row < width; row++)
 	{
+		// find the current index offset for the row
 		GLuint rowIndexOffset = row * width * step;
 		for (GLint col = 0; col < height; col++) {
+			// find the current index offset for the column
 			GLuint colIndexOffset = col * step;
+
+			// find the index for the vertex data
 			GLuint vertexStartIndex = rowIndexOffset + colIndexOffset;
 
+			// find X and Y distance from the center
 			GLfloat diffX = fabsf(centerX - col);
 			GLfloat diffY = fabsf(centerY - row);
 
+			// calculate normalised distance
 			GLfloat distance = sqrtf(pow(diffX, 2) + pow(diffY, 2));
 			GLfloat distanceNrm = distance / maxDistance;
 
+			// fetch current value
 			GLfloat y = vertices[vertexStartIndex + 1];
 			
+			// modify value using its distance, based on exponential curve
 			y = y * (1 - distanceNrm) + pow(M_E, (-5 * distanceNrm)) - distanceNrm;
 
+			// if y is now less than 0, return it to 0
 			if (y < 0.0f)
 				y = 0.0f;
 
+			// set index to new value
 			vertices[vertexStartIndex + 1] = y;
 
-			// colour
-			if (y < 0.06) {
-				vertices[vertexStartIndex + 3] = colours[0][0];
-				vertices[vertexStartIndex + 4] = colours[0][1];
-				vertices[vertexStartIndex + 5] = colours[0][2];
-			}
-			else if (y < 1.2) {
-				vertices[vertexStartIndex + 3] = colours[1][0];
-				vertices[vertexStartIndex + 4] = colours[1][1];
-				vertices[vertexStartIndex + 5] = colours[1][2];
-			}
-			else if (y < magnitude - (magnitude * 0.1)) {
-				vertices[vertexStartIndex + 3] = colours[2][0];
-				vertices[vertexStartIndex + 4] = colours[2][1];
-				vertices[vertexStartIndex + 5] = colours[2][2];
-			}
-			else {
-				vertices[vertexStartIndex + 3] = colours[3][0];
-				vertices[vertexStartIndex + 4] = colours[3][1];
-				vertices[vertexStartIndex + 5] = colours[3][2];
-			}
+			// update colour
+			updateColourForHeight(vertexStartIndex, y);
 		}
 	}
 
@@ -143,9 +129,13 @@ void Terrain::setDefaults()
 {
 	octaves = 4;
 	magnitude = 4;
+	exponent = 2;
 
+	// calculate the center vertex indexes
 	centerX = roundf(width / 2);
 	centerY = roundf(height / 2);
+
+	// calculate the largest possible distance so distance calculations can be normalised
 	maxDistance = sqrtf(pow(fabsf(centerX), 2) + pow(fabsf(centerY), 2));
 }
 
@@ -159,8 +149,10 @@ void Terrain::createTerrain()
 
 void Terrain::updateHeightmap(GLboolean useNewSeed)
 {
+	// step for each vertex data set
 	const int step = 9;
 
+	// update noise values
 	noise.SetNoiseType(noiseType);
 	noise.SetFrequency(noiseFrequency);
 	noise.SetFractalOctaves(octaves);
@@ -169,40 +161,27 @@ void Terrain::updateHeightmap(GLboolean useNewSeed)
 		noise.SetSeed(rand());
 	}
 
+	// iterate rows and columns, and insert new height & colour values 
 	for (GLint row = 0; row < width; row++)
 	{
+		// find the current index offset for the row
 		GLuint rowIndexOffset = row * width * step;
 		for (GLint col = 0; col < height; col++) {
+			// find the current index offset for the column
 			GLuint colIndexOffset = col * step;
-			GLuint vertexStartIndex = rowIndexOffset + colIndexOffset;
-			GLfloat y = magnitude * noise.GetNoise(col, row);
 
-			y = pow(y, 2);
-			// y pos
+			// find the index for the vertex data
+			GLuint vertexStartIndex = rowIndexOffset + colIndexOffset;
+
+			// calculate new height value
+			GLfloat y = noise.GetNoise(col, row) * magnitude;
+			y = pow(y, exponent);
+
+			// update y value
 			vertices[vertexStartIndex + 1] = y;
 
-			// colour
-			if (y < 0.06) {
-				vertices[vertexStartIndex + 3] = colours[0][0];
-				vertices[vertexStartIndex + 4] = colours[0][1];
-				vertices[vertexStartIndex + 5] = colours[0][2];
-			}												 
-			else if (y < 1.2) {								 
-				vertices[vertexStartIndex + 3] = colours[1][0];
-				vertices[vertexStartIndex + 4] = colours[1][1];
-				vertices[vertexStartIndex + 5] = colours[1][2];
-			}												  
-			else if (y < magnitude - (magnitude * 0.1)) {
-				vertices[vertexStartIndex + 3] = colours[2][0];
-				vertices[vertexStartIndex + 4] = colours[2][1];
-				vertices[vertexStartIndex + 5] = colours[2][2];
-			}												 
-			else {											 
-				vertices[vertexStartIndex + 3] = colours[3][0];
-				vertices[vertexStartIndex + 4] = colours[3][1];
-				vertices[vertexStartIndex + 5] = colours[3][2];
-			}
-			
+			// update colour for new height
+			updateColourForHeight(vertexStartIndex, y);
 		}
 	}
 	loadIntoShader();
@@ -215,21 +194,25 @@ glm::mat4 Terrain::getModel()
 
 void Terrain::generateVertices()
 {
+	// set FastNoise noise properties to current terrain config
 	noise.SetFractalOctaves(octaves);
 	noise.SetNoiseType(noiseType);
 	noise.SetFrequency(noiseFrequency);
 	noise.SetSeed(seed);
 
-
+	// iterate w/h of the terrain and add vertex data for each position
 	for (GLint row = 0; row < width; row++)
 	{
+		// calculate the current spatial offset for the next row based on tilSize
 		GLfloat rowOffset = row * tileSize;
 		for (GLint col = 0; col < height; col++) {
 
-			// position
+			// position data
+			// calculate height data - use FastNoise and then apply magnitude / exponent modifications
 			GLfloat y = magnitude * noise.GetNoise(col, row);
-			y = pow(y, 2);
+			y = pow(y, exponent);
 
+			// add positional data to vertex array
 			vertices.push_back((GLfloat)col * tileSize);
 			vertices.push_back(y);
 			vertices.push_back((GLfloat)rowOffset);
@@ -247,16 +230,29 @@ void Terrain::generateVertices()
 
 void Terrain::generateIndices()
 {
+	// initialise index counter to track current index count for degenerate triangles
 	GLuint indexCounter = 0;
+
+	// iterate whilst there are stll indexes left to add
 	for (size_t index = 0; (index + width) < (height * width); index += 1)
 	{
+		// add indexes for current position, and the index of the vertex directly below
 		indices.push_back(index);
 		indices.push_back(index + width);
 
+		// add 1 to index counter for this row
 		indexCounter += 1;
+
+		// if we are at the end of the row, we need to add a 'degenerate' triangle (triangle 
+		// with no area - automatically removed by OpenGL). This prevents triangles being drawn
+		// that connect the end of one row with the start of the next.
 		if (indexCounter == width && (index + width) != (height * width) - 1) {
+			// add two indexes - one for the last vertex of this row, and one for the 
+			// first vertex of the next row.
 			indices.push_back(index + width);
 			indices.push_back(index + 1);
+
+			// reset counter for next row
 			indexCounter = 0;
 		}
 	}
@@ -269,6 +265,30 @@ void Terrain::initBuffers()
 
 	glGenBuffers(1, &VBO);
 	glGenBuffers(1, &EBO);
+}
+
+void Terrain::updateColourForHeight(GLuint& startIndex, GLfloat& y)
+{
+	if (y < 0.06) {
+		vertices[startIndex + 3] = colours[0][0];
+		vertices[startIndex + 4] = colours[0][1];
+		vertices[startIndex + 5] = colours[0][2];
+	}
+	else if (y < 1.2) {
+		vertices[startIndex + 3] = colours[1][0];
+		vertices[startIndex + 4] = colours[1][1];
+		vertices[startIndex + 5] = colours[1][2];
+	}
+	else if (y < magnitude - (magnitude * 0.1)) {
+		vertices[startIndex + 3] = colours[2][0];
+		vertices[startIndex + 4] = colours[2][1];
+		vertices[startIndex + 5] = colours[2][2];
+	}
+	else {
+		vertices[startIndex + 3] = colours[3][0];
+		vertices[startIndex + 4] = colours[3][1];
+		vertices[startIndex + 5] = colours[3][2];
+	}
 }
 
 void Terrain::addColourForHeight(GLfloat& y)

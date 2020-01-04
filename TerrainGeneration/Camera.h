@@ -7,12 +7,17 @@
 #include "InputManager.h"
 #include "Observer.h"
 #include "Time.h"
+#include <iostream>
+#include "Terrain.h"
 
 class Camera : public Observer
 {
 public:
 	Camera(InputManager* _inputManager, Time* _time);
 	glm::mat4 getPosition();
+
+	void setLocation(glm::vec3 pos);
+	void setLocationToTerrainCenter(Terrain* t);
 
 	virtual void notify() override;
 private:
@@ -31,13 +36,13 @@ private:
 	GLfloat speed = speeds[currentSpeedIndex];
 	GLfloat yaw = 0.0f;
 	GLfloat pitch = 0.0f;
-	GLfloat sensitivity = 5;
+	GLfloat sensitivity = 0.05;
 
 	// mouse position details
 	GLboolean firstMouse = true;
 
-	GLfloat lastX;
-	GLfloat lastY;
+	GLfloat lastX = 0.0f;
+	GLfloat lastY = 0.0f;
 
 	void registerKeypressCallbacks();
 	void updateCameraPosition(GLdouble mousePosX, GLdouble mousePosY);

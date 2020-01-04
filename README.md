@@ -16,6 +16,7 @@ At this point the project should be ready to build.
 | Key  | Action |
 | ------------- | ------------- |
 | W/A/S/D & Mouse | Fly / move camera |
+| C | Centre / reset camera position |
 | Q | Increase fly speed (toggle faster / slower) |
 | Esc | Exit to terminal |
 | R | Re-generate terrain with current parameters & new seed |

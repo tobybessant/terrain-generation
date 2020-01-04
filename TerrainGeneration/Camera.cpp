@@ -1,9 +1,8 @@
 #include "Camera.h"
 
-Camera::Camera(InputManager* _inputManager, Time* _time)
+Camera::Camera(InputManager* _inputManager, Time* _time) 
+	: inputManager(_inputManager), time(_time)
 {
-	time = _time;
-	inputManager = _inputManager;
 	registerKeypressCallbacks();
 	inputManager->registerMouseObserver(*this);
 }
@@ -11,6 +10,18 @@ Camera::Camera(InputManager* _inputManager, Time* _time)
 glm::mat4 Camera::getPosition()
 {
 	return glm::lookAt(position, position + forward, up);
+}
+
+void Camera::setLocation(glm::vec3 pos)
+{
+	position = pos;
+}
+
+void Camera::setLocationToTerrainCenter(Terrain* t)
+{
+	glm::vec3 firstVertex = t->getFirstVertexPosition();
+	firstVertex[1] += 2.0f;
+	setLocation(firstVertex);
 }
 
 void Camera::notify()
@@ -58,8 +69,8 @@ void Camera::updateCameraPosition(GLdouble mousePosX, GLdouble mousePosY)
 	lastX = mousePosX;
 	lastY = mousePosY;
 
-	xoffset *= sensitivity * time->getDeltaTime();
-	yoffset *= sensitivity * time->getDeltaTime();
+	xoffset *= sensitivity;
+	yoffset *= sensitivity;
 
 	yaw += xoffset;
 	pitch += yoffset;

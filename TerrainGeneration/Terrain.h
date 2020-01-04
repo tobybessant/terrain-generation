@@ -21,6 +21,8 @@ public:
 	Terrain(GLuint _size, GLfloat _tileSize, FastNoise::NoiseType _noiseType, GLfloat _noiseFrequency);
 	Terrain(GLuint _size, GLfloat _tileSize, FastNoise::NoiseType _noiseType, GLfloat _noiseFrequency, GLuint seed);
 
+	glm::vec3 getFirstVertexPosition();
+
 	void increaseNoiseFrequency();
 	void decreaseNoiseFrequency();
 
@@ -58,6 +60,7 @@ private:
 	GLuint seed;
 	GLuint octaves;
 	GLint magnitude;
+	GLfloat exponent;
 
 	FastNoise noise;
 	GLfloat noiseFrequency;
@@ -82,6 +85,7 @@ private:
 
 	void initBuffers();
 
+	void updateColourForHeight(GLuint& startIndex, GLfloat& y);
 	void addColourForHeight(GLfloat& y);
 
 	void updateHeightmap(GLboolean useNewSeed);
