@@ -1,12 +1,36 @@
 # PCG Noise-Based Terrain Generator
 This project showcases the use of noise functions when procedurally generating 3D terrain. This project uses Auburns' [FastNoise](https://github.com/Auburns/FastNoise) library to generate the noise-based height data for a given vertex.
 
+- [PCG Noise-Based Terrain Generator](#pcg-noise-based-terrain-generator)
+  * [Generating Terrains / User Guide](#generating-terrains---user-guide)
+    + [Setup](#setup)
+      - [Executable](#executable)
+      - [VS Project](#vs-project)
+    + [Controls](#controls)
+    + [Terrain Parameters](#terrain-parameters)
+      - [CLI Parameters](#cli-parameters)
+      - [Post-generation Parameters](#post-generation-parameters)
+  * [Technical Design](#technical-design)
+    + [1. Taking Terrain Parameters](#1-taking-terrain-parameters)
+    + [2. Build the Terrain Vertices](#2-build-the-terrain-vertices)
+    + [3. Rendering the Terrain Vertices](#3-rendering-the-terrain-vertices)
+    + [4. Listen for Updates and Re-render](#4-listen-for-updates-and-re-render)
+  * [Other Implementation Details](#other-implementation-details)
+    + [Camera](#camera)
+    + [Time](#time)
+    + [FastNoise](#fastnoise)
+- [Miscellaneous](#miscellaneous)
+  * [Inspiration & Differences from Other Programs](#inspiration---differences-from-other-programs)
+  * [What I Started With](#what-i-started-with)
+  * [Video Report](#video-report)
+
+
 ## Generating Terrains / User Guide
-This program runs from the command-line, and on starting will ask for various parameters to generate the base terrain. Once the parameters have been entered, it will open the generated terrain in fullscreen-windowed mode. The terrain can be live-updated and tweaked using the various hot-keys specified below.
+This program runs from the command-line, and on starting will ask to either start the Terrain Wizard or provide a path to a .terrain file. The terrain wizard will ask for various parameters to generate the base terrain. Once the parameters have been entered/file loaded, it will open the generated terrain in fullscreen-windowed mode. The terrain can be live-updated and tweaked using the various hot-keys specified below.
 
 ### Setup
 #### Executable
-Unzip 'Executable' folder and run TerrainGeneration.exe.
+Unzip the 'Executable' folder and run TerrainGeneration.exe.
 
 #### VS Project
 Download/clone the solution. You will need to install the dependencies - they should already be in the NuGet Packages for the project, to install them:
@@ -34,7 +58,7 @@ At this point the project should be ready to build.
 | E | Export terrain config to .terrain file (file will be exported to 'exported_terrains' folder). |
 
 ### Terrain Parameters
-Below are explanations of each of the terrain parameters and how they affect the generated terrain. The CLI Parameters' are the parameters that the Terrain Wizard will collect from the user. The 'Post-generation Parameters' will be set to defaults when using the Terrain Wizard.
+Below are explanations of each of the terrain parameters and how they affect the generated terrain. The CLI Parameters are the parameters that the Terrain Wizard will collect from the user. The 'Post-generation Parameters' will be set to defaults when using the Terrain Wizard.
 
 All parameters are set from the file contents when loading terrain data from file.
 
@@ -74,14 +98,14 @@ The second responsibility of the Terrain class, is to render the terrain vertice
 ### 4. Listen for Updates and Re-render
 The final aspect of the application handles managing the terrain once it has been rendered. This allows the user to easily tweak the terrain without having to exit and re-enter all of parameters. The ```InputManager``` class is used by GLFW to listen for user input - on keypress, the ```InputManager``` class will look up registered callbacks for the pressed key in its ```keypressCallbacks``` dictionary. On program setup, the various ```Terrain``` class update methods are registered to their corresponding keys. The actual update process consists of editing a property on the terrain, and then updating the vertex data. Updating the heightmap is done by iterating over the vertices, identifying which values represent the height of each vertex, and regenerating it accordingly. Once all vertices have been updated, the data is re-loaded into the GPU buffers for rendering.
 
-### Other Implementation Details
-## Camera
+## Other Implementation Details
+### Camera
 To enable the player to 'fly' around the terrain they have created, I designed a ```Camera``` class, that uses the ```Input Manager``` to both register key presses, as well as subscribe to any new mouse updates through the use of an observer pattern.
 
-## Time
+### Time
 To ensure particular updates are consistent across machines - such as the speed of the camera - I added a ```Time``` class that tracks the current frame state and calculates the ```deltaTime``` which can then be used in the camera movement calculations.
 
-## FastNoise
+### FastNoise
 Auburn's FastNoise library has been used to generate the noise-based height map. It was chosen based on its optimal combination of noise-generation speed and feature set. With 9 different noise types, it allows my program to offer many different outputs to the user. The library can generate noise based on provided X & Y coordinates. This worked well with my set up, as I generate the grid (columns and rows) at the same time as I build their vertex data, allowing me to generate the height of each vertex with their current column (x) and row (y) values.
 
 # Miscellaneous
@@ -92,3 +116,6 @@ Noise-based terrain generation is very popular, however I have made an effort to
 
 ## What I Started With
 This project started from a new/blank project. The only resource pulled across / not originally written for this submission was the module-provided sample ShaderLoader code, to load my simplified shaders into a shader program.
+
+## Video Report
+The video for this report can be accessed at: https://www.youtube.com/watch?v=qH41VISRSoA
