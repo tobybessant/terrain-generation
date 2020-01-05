@@ -86,7 +86,7 @@ The application has 4 main tasks when creating the desired user experience.
 3. Render the terrain data.
 4. Update & re-render the heightmap as the user tweaks the terrain.
 
-### 1. Taking Terrain Parameters
+### 1. Getting Terrain Parameters
 To gather initial terrain parameters, I designed a ```ConsoleServices``` class that can handle console interactions. The ```ConsoleServices``` class has a number of methods to retrieve & validate user input. The first question the program asks is if the user would like to generate a terrain using the terrain wizard, or import data from a .terrain file. If the user choses to use the Terrain Wizard, the ```askForTerrain()``` method collects parameters from the user and returns the Terrain to be rendered. If the user choses to load parameters from a .terrain file, the console asks for a path, and then uses ```loadTerrainFromFile()``` to read & return a new terrain from the file's contents.
 
 ### 2. Build the Terrain Vertices
