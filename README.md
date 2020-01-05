@@ -11,7 +11,7 @@ This project showcases the use of noise functions when procedurally generating 3
       - [CLI Parameters](#cli-parameters)
       - [Post-generation Parameters](#post-generation-parameters)
   * [Technical Design](#technical-design)
-    + [1. Taking Terrain Parameters](#1-taking-terrain-parameters)
+    + [1. Getting Terrain Parameters](#1-getting-terrain-parameters)
     + [2. Build the Terrain Vertices](#2-build-the-terrain-vertices)
     + [3. Rendering the Terrain Vertices](#3-rendering-the-terrain-vertices)
     + [4. Listen for Updates and Re-render](#4-listen-for-updates-and-re-render)
