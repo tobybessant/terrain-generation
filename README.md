@@ -5,7 +5,11 @@ This project showcases the use of noise functions when procedurally generating 3
 This program runs from the command-line, and on starting will ask for various parameters to generate the base terrain. Once the parameters have been entered, it will open the generated terrain in fullscreen-windowed mode. The terrain can be live-updated and tweaked using the various hot-keys specified below.
 
 ### Setup
-Once you have downloaded/cloned the solution, you will need to install the dependencies. These dependencies should already be in the NuGet Packages for the project, to install them:
+#### Executable
+Unzip 'Executable' folder and run TerrainGeneration.exe.
+
+#### VS Project
+Download/clone the solution. You will need to install the dependencies - they should already be in the NuGet Packages for the project, to install them:
 
 1. Right Click Solution > 'Restore NuGet Packages for the solution'
 2. Right Click Project > 'Rescan the project for dependencies'
@@ -15,21 +19,24 @@ At this point the project should be ready to build.
 ### Controls
 | Key  | Action |
 | ------------- | ------------- |
-| W/A/S/D & Mouse | Fly / move camera |
-| C | Centre / reset camera position |
-| Q | Increase fly speed (toggle faster / slower) |
-| Esc | Exit to terminal |
-| R | Re-generate terrain with current parameters & new seed |
-| + | Increase noise frequency (10% increments)  |
-| - | Decrease noise frequency (10% increments)  |
-| Up Arrow | Increase terrain magnitude  |
-| Down Arrow | Decrease terrain magnitude  |
-| 0 | Increase octave count (fractal algorithms only)  |
-| 9 | Decrease octave count (fractal algorithms only)  |
+| W/A/S/D & Mouse | Fly / move camera. |
+| C | Centre / reset camera position. |
+| Q | Increase fly speed (toggle faster / slower). |
+| Esc | Exit to terminal. |
+| R | Re-generate terrain with current parameters & new seed. |
+| + | Increase noise frequency (10% increments). |
+| - | Decrease noise frequency (10% increments).  |
+| Up Arrow | Increase terrain magnitude.  |
+| Down Arrow | Decrease terrain magnitude.  |
+| 0 | Increase octave count (fractal algorithms only).  |
+| 9 | Decrease octave count (fractal algorithms only).  |
 | i | 'Island-ify' terrain. The application will attempt to turn the existing terrain into an island surrounded by water. If the terrain has particularly high vertexes on the outer-edges, this button may need to be pressed more than once to completely separate the terrain from the edge. NOTE: tweaking any other properties of the terrain will undo the 'island-ification' and will need to be 're-island-ified'. |
+| E | Export terrain config to .terrain file (file will be exported to 'exported_terrains' folder). |
 
 ### Terrain Parameters
-Below are explanations of each of the terrain parameters and how they affect the generated terrain.
+Below are explanations of each of the terrain parameters and how they affect the generated terrain. The CLI Parameters' are the parameters that the Terrain Wizard will collect from the user. The 'Post-generation Parameters' will be set to defaults when using the Terrain Wizard.
+
+All parameters are set from the file contents when loading terrain data from file.
 
 #### CLI Parameters
 | Parameter  | Description |
@@ -49,23 +56,23 @@ These are the parameters that can only be updated once the terrain has been gene
 | Terrain Magnitude | 4 |  This is a multiplier applied to each generated vertex height, to increase / decrease the height of terrain features.  |
 
 ## Technical Design
-The application has 4 main tasks when creating the required user experience.
-1. Retrieve gather initial terrain parameters from the user.
+The application has 4 main tasks when creating the desired user experience.
+1. Retrieve initial terrain parameters from the user (either from a .terrain file or using the terrain wizard).
 2. Build the terrain vertices, using noise to generate the height of each vertex.
 3. Render the terrain data.
 4. Update & re-render the heightmap as the user tweaks the terrain.
 
 ### 1. Taking Terrain Parameters
-To gather initial terrain parameters, I designed a ```ConsoleServices``` class that can handle console interactions. The ```ConsoleServices``` class has a number of methods to retrieve & validate user input, however the main function that returns the Terrain to be rendered is ```askForTerrain()```. This function gathers the parameters, constructs a new terrain, and returns it.
+To gather initial terrain parameters, I designed a ```ConsoleServices``` class that can handle console interactions. The ```ConsoleServices``` class has a number of methods to retrieve & validate user input. The first question the program asks is if the user would like to generate a terrain using the terrain wizard, or import data from a .terrain file. If the user choses to use the Terrain Wizard, the ```askForTerrain()``` method collects parameters from the user and returns the Terrain to be rendered. If the user choses to load parameters from a .terrain file, the console asks for a path, and then uses ```loadTerrainFromFile()``` to read & return a new terrain from the file's contents.
 
 ### 2. Build the Terrain Vertices
-The largest part of the application, is the ```Terrain``` class. This class has a number of responsibilities, all related to getting, setting, generating and rendering the terrain. ```createTerrain()``` builds terrain vertices using the provided parameters. ```generateVertices()``` will iterate over the specified height / width of the grid and initialise vertex data for each point. This includes position (with the height being set using the 'FastNoise' noise function), polygon line colour, and polygon fill colour.
+The largest part of the application is the ```Terrain``` class. This class has a number of responsibilities, all related to getting, setting, generating and rendering the terrain. ```createTerrain()``` builds terrain vertices using the provided parameters. ```generateVertices()``` will iterate over the specified height / width of the grid and initialise vertex data for each point. This includes position (with the height being set using the 'FastNoise' noise function), polygon line colour, and polygon fill colour.
 
 ### 3. Rendering the Terrain Vertices
-The second responsibility of the Terrain class, is to render the terrain vertices. This is done by generating the indices, loading the vertex & index data into the GPU buffers, rendering the fill colour, then rendering the polygon line colour. This two-step rendering process makes the terrain appear opaque, even when displaying the polygons.
+The second responsibility of the Terrain class, is to render the terrain vertices. This is done by generating the indices, loading the vertex & index data into the GPU buffers, rendering the fill colour, then rendering the polygon line colour. This two-step rendering process makes the terrain appear opaque, even when displaying the polygon triangles.
 
 ### 4. Listen for Updates and Re-render
-The final aspect of the application handles managing the terrain once it has been rendered. To allow the user to easily tweak the terrain without having to exit and re-enter all parameters, it was important to implement live-updating of terrain values. The ```InputManager``` class is used by GLFW to listen for user input - on keypress the ```InputManager``` class will look up registered callbacks for the pressed key in its ```keypressCallbacks``` dictionary. On program setup, the various ```Terrain``` class update methods are registered to their corresponding keys. The actual update process consists of editing a property on the terrain, and then updating the vertex data. Updating the heightmap is done by iterating over the vertices, identifying which values represent the height of each vertex, and regenerating it accordingly. Once all vertices have been updated, the data is re-loaded into the GPU buffers for rendering.
+The final aspect of the application handles managing the terrain once it has been rendered. This allows the user to easily tweak the terrain without having to exit and re-enter all of parameters. The ```InputManager``` class is used by GLFW to listen for user input - on keypress, the ```InputManager``` class will look up registered callbacks for the pressed key in its ```keypressCallbacks``` dictionary. On program setup, the various ```Terrain``` class update methods are registered to their corresponding keys. The actual update process consists of editing a property on the terrain, and then updating the vertex data. Updating the heightmap is done by iterating over the vertices, identifying which values represent the height of each vertex, and regenerating it accordingly. Once all vertices have been updated, the data is re-loaded into the GPU buffers for rendering.
 
 ### Other Implementation Details
 ## Camera
@@ -84,4 +91,4 @@ The main driver for creating the application was to learn something about PCG, a
 Noise-based terrain generation is very popular, however I have made an effort to make my program unique where possible. The main features that differentiate my program from other programs are the ability to 'fly' through the terrain, this allows the user to see their terrain from many different angles / perspectives. Secondly, I believe my 'island-ification' functionality is fairly unique, having defined my own curve function to lower vertex heights depending on their distance from the centre.
 
 ## What I Started With
-This project started from a new/blank project, not related to my previous Model Loader submission. The only resource pulled across / not originally written for this submission was the module-provided sample ShaderLoader code, to load my simplified shaders into a shader program.
+This project started from a new/blank project. The only resource pulled across / not originally written for this submission was the module-provided sample ShaderLoader code, to load my simplified shaders into a shader program.
