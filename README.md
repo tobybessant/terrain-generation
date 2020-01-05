@@ -63,13 +63,13 @@ Below are explanations of each of the terrain parameters and how they affect the
 All parameters are set from the file contents when loading terrain data from file.
 
 #### CLI Parameters
-| Parameter  | Description |
-| ------------- | ------------- |
-| Terrain Size | The number of tiles that will make up the width and depth of the terrain. It is effectively the 'grid size'. For instance, entering 350 will result in a 350x350 grid of tiles. |
-| Tile Size | The size of each tile in the terrain.  |
-| Noise Type | The type of noise algorithm to be used. 'Perlin Fractal' is recommended for those new to using noise algorithms in terrain generation. |
-| Noise Frequency | How 'coarse' the noise will be. The larger the terrain size, the smaller this should be. Any value larger than 0.1 will often result in non-terrain looking terrain as it is too granular. |
-| Seed | Input an initial seed into the terrain, to start the noise generation from. Useful if you want to re-generate the same terrain. |
+| Parameter  | Type | Example | Description |
+| ---------- | :--: | :-----: | ----------- |
+| Terrain Size | Int | 350 | The number of tiles that will make up the width and depth of the terrain. It is effectively the 'grid size'. For instance, entering 350 will result in a 350x350 grid of tiles. |
+| Tile Size | Float | 0.1 | The size of each tile in the terrain.  |
+| Noise Type | Int | 3 | The type of noise algorithm to be used. 'Perlin Fractal' is recommended for those new to using noise algorithms in terrain generation. |
+| Noise Frequency | Float | 0.005 | How 'coarse' the noise will be. The smaller the terrain size, the smaller this value should be. Any value larger than 0.1 will often result in non-terrain looking terrain as it is too granular. |
+| Seed | Int | 2376251 | Input an initial seed into the terrain, to start the noise generation from. Useful if you want to re-generate the same terrain. |
 
 #### Post-generation Parameters
 These are the parameters that can only be updated once the terrain has been generated.
@@ -118,4 +118,4 @@ Noise-based terrain generation is very popular, however I have made an effort to
 This project started from a new/blank project. The only resource pulled across / not originally written for this submission was the module-provided sample ShaderLoader code, to load my simplified shaders into a shader program.
 
 ## Video Report
-The video for this report can be accessed at: https://www.youtube.com/watch?v=qH41VISRSoA
+The video report for this project can be accessed at: https://www.youtube.com/watch?v=qH41VISRSoA
