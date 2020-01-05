@@ -1,0 +1,9 @@
+terrain_size=500
+tile_size=0.050000
+noise_type=3
+noise_seed=0
+noise_frequency=0.005000
+noise_octaves=4
+noise_magnitude=4
+is_island=0
+
