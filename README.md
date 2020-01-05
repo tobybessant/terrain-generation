@@ -2,7 +2,7 @@
 This project showcases the use of noise functions when procedurally generating 3D terrain. This project uses Auburns' [FastNoise](https://github.com/Auburns/FastNoise) library to generate the noise-based height data for a given vertex.
 
 - [PCG Noise-Based Terrain Generator](#pcg-noise-based-terrain-generator)
-  * [Generating Terrains / User Guide](#generating-terrains---user-guide)
+  * [Generating Terrains / User Guide](#generating-terrains--user-guide)
     + [Setup](#setup)
       - [Executable](#executable)
       - [VS Project](#vs-project)
