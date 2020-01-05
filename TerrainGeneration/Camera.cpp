@@ -20,7 +20,7 @@ void Camera::setLocation(glm::vec3 pos)
 void Camera::setLocationToTerrainCenter(Terrain* t)
 {
 	glm::vec3 firstVertex = t->getFirstVertexPosition();
-	firstVertex[1] += 2.0f;
+	firstVertex[1] += 3.0f;
 	setLocation(firstVertex);
 }
 

@@ -4,14 +4,42 @@ Terrain::Terrain(GLuint _size, GLfloat _tileSize, FastNoise::NoiseType _noiseTyp
 	width(_size), height(_size), tileSize(_tileSize), noiseType(_noiseType), noiseFrequency(_noiseFrequency), seed(rand())
 {
 	setDefaults();
+	calculateMaxDistance();
 	createTerrain();
 }
 
-Terrain::Terrain(GLuint _size, GLfloat _tileSize, FastNoise::NoiseType _noiseType, GLfloat _noiseFrequency, GLuint _seed) :
+Terrain::Terrain(GLuint _size, GLfloat _tileSize, FastNoise::NoiseType _noiseType, GLfloat _noiseFrequency, GLint _seed) :
 	width(_size), height(_size), tileSize(_tileSize), noiseType(_noiseType), noiseFrequency(_noiseFrequency), seed(_seed)
 {
 	setDefaults();
+	calculateMaxDistance();
 	createTerrain();
+}
+
+Terrain::Terrain(GLuint _size, GLfloat _tileSize, FastNoise::NoiseType _noiseType, GLfloat _noiseFrequency, GLint _seed, GLint _noiseOctaves, GLint _noiseMagnitude, GLboolean _isIsland) :
+	width(_size), height(_size), tileSize(_tileSize), noiseType(_noiseType), noiseFrequency(_noiseFrequency), seed(_seed), octaves(_noiseOctaves), magnitude(_noiseMagnitude)
+{
+	createTerrain();
+	calculateMaxDistance();
+	if (_isIsland) {
+		makeIsland();
+	}
+}
+
+std::string Terrain::getTerrainConfigString()
+{
+	std::string result = "";
+
+	result += "terrain_size=" + std::to_string(width) + "\n";
+	result += "tile_size=" + std::to_string(tileSize) + "\n";
+	result += "noise_type=" + std::to_string(noise.GetNoiseType()) + "\n";
+	result += "noise_seed=" + std::to_string(noise.GetSeed()) + "\n";
+	result += "noise_frequency=" + std::to_string(noise.GetFrequency()) + "\n";
+	result += "noise_octaves=" + std::to_string(noise.GetFractalOctaves()) + "\n";
+	result += "noise_magnitude=" + std::to_string(magnitude) + "\n";
+	result += "is_island=" + std::to_string(isIsland) + "\n";
+
+	return result;
 }
 
 glm::vec3 Terrain::getFirstVertexPosition()
@@ -96,6 +124,7 @@ void Terrain::makeIsland()
 	}
 
 	loadIntoShader();
+	isIsland = true;
 }
 
 void Terrain::increaseOctaves()
@@ -129,8 +158,10 @@ void Terrain::setDefaults()
 {
 	octaves = 4;
 	magnitude = 4;
-	exponent = 2;
+}
 
+void Terrain::calculateMaxDistance()
+{
 	// calculate the center vertex indexes
 	centerX = roundf(width / 2);
 	centerY = roundf(height / 2);
@@ -333,5 +364,9 @@ void Terrain::loadIntoShader()
 
 	glEnableVertexAttribArray(0);
 	glEnableVertexAttribArray(1);
+
+	// Reset island flag, will be set to true after this function only in the 'makeIsland()' method. 
+	// Other update methods will not set this flag to true
+	isIsland = false;
 }
 

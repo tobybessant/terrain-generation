@@ -61,7 +61,7 @@ int main() {
 	glewInit();
 	GLuint program = programSetup();
 
-	Terrain* t;
+	Terrain* t = nullptr;
 
 	inputManager->addKeyBinding(GLFW_KEY_C, [&]() {
 		cam.setLocationToTerrainCenter(t);
@@ -80,31 +80,40 @@ int main() {
 
 	inputManager->addKeyBinding(GLFW_KEY_R, [&]() { t->regenerateTerrain(); });
 
+	inputManager->addKeyBinding(GLFW_KEY_E, [&]() {
+		string data = t->getTerrainConfigString();
+		console.exportToFile(data);
+	});
+
 	do {
-		// terrain and camera setup
+		
 		t = console.askForTerrain();
-		cam.setLocationToTerrainCenter(t);
+		
+		if (t != nullptr) {
+			// terrain and camera setup
+			cam.setLocationToTerrainCenter(t);
 
-		glfw.showWindow();
-		while (!glfw.windowShouldClose()) {
-			// clear window using buffers
-			glClear(GL_COLOR_BUFFER_BIT);
-			glClear(GL_DEPTH_BUFFER_BIT);
+			glfw.showWindow();
+			while (!glfw.windowShouldClose()) {
+				// clear window using buffers
+				glClear(GL_COLOR_BUFFER_BIT);
+				glClear(GL_DEPTH_BUFFER_BIT);
 
-			// update mvp
-			mvp = projection * cam.getPosition() * t->getModel();
-			glUniformMatrix4fv(0, 1, GL_FALSE, glm::value_ptr(mvp));
+				// update mvp
+				mvp = projection * cam.getPosition() * t->getModel();
+				glUniformMatrix4fv(0, 1, GL_FALSE, glm::value_ptr(mvp));
 
-			// render terrain 
-			t->render(program);
+				// render terrain 
+				t->render(program);
 
-			// update time and glfw states
-			time->update();
-			glfw.update();
+				// update time and glfw states
+				time->update();
+				glfw.update();
+			}
+
+			glfw.hideWindow();
+
+			delete t;
 		}
-
-		glfw.hideWindow();
-
-		delete t;
 	} while (true);
 }

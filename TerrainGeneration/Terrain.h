@@ -14,12 +14,16 @@
 #include <iostream>
 #include <math.h> 
 #include <cmath>
+#include <string>
 
 class Terrain
 {
 public:
 	Terrain(GLuint _size, GLfloat _tileSize, FastNoise::NoiseType _noiseType, GLfloat _noiseFrequency);
-	Terrain(GLuint _size, GLfloat _tileSize, FastNoise::NoiseType _noiseType, GLfloat _noiseFrequency, GLuint seed);
+	Terrain(GLuint _size, GLfloat _tileSize, FastNoise::NoiseType _noiseType, GLfloat _noiseFrequency, GLint seed);
+	Terrain(GLuint _size, GLfloat _tileSize, FastNoise::NoiseType _noiseType, GLfloat _noiseFrequency, GLint seed, GLint noiseOctaves, GLint noiseMagnitude, GLboolean isIsland);
+
+	std::string getTerrainConfigString();
 
 	glm::vec3 getFirstVertexPosition();
 
@@ -57,10 +61,12 @@ private:
 	GLfloat maxDistance;
 
 	GLfloat tileSize;
-	GLuint seed;
+	GLint seed;
 	GLuint octaves;
 	GLint magnitude;
-	GLfloat exponent;
+	GLfloat exponent = 2;
+
+	GLboolean isIsland = false;
 
 	FastNoise noise;
 	GLfloat noiseFrequency;
@@ -77,6 +83,7 @@ private:
 	glm::mat4 model = glm::mat4(1.0f);
 
 	void setDefaults();
+	void calculateMaxDistance();
 
 	void createTerrain();
 
